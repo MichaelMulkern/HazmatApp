@@ -1,9 +1,15 @@
 <template>
     <div>
         <Slide>
-            <a id="home" href="#">
-                <span>Home</span>
-            </a>
+            <h3>Stuff</h3>
+            <li>Links</li>
+            <li>Info</li>
+            <li>Links</li>
+            <li>Info</li>
+            <li>Links</li>
+            <li>Info</li>
+            <li>Links</li>
+            <li>Info</li>
             <li><router-link v-bind:to="{ name: 'about' }"> About </router-link></li>
         </Slide>
     </div>

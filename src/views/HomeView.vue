@@ -10,11 +10,13 @@ lithium ion and lithium metal batteries.</h2>
     class="dropdown"
     v-model="transport">
     <option class="drop-option" value="air">Air</option>
-    <option class="drop-option" value="ground">Ground</option>
-    <option class="drop-option" value="ocean">Ocean</option>
+    <option class="drop-option" value="ocean">Maritime</option>
+    <option class="drop-option" value="ground">49 CFR Road/Rail</option>
   </select>
 
     <air-transport v-show="airBool"/>
+    <ground-transport v-show="groundBool"/>
+    <ocean-transport v-show="oceanBool"/>
     <slide-menu />
     
   </div>
@@ -24,6 +26,8 @@ lithium ion and lithium metal batteries.</h2>
 // @ is an alias to /src
 import SlideMenu from '@/components/SlideMenu.vue'
 import AirTransport from '@/components/AirTransport.vue'
+import GroundTransport from '@/components/GroundTransport.vue'
+import OceanTransport from '@/components/OceanTransport.vue'
 
 
 export default {
@@ -38,7 +42,9 @@ export default {
   },
   components: {
     SlideMenu,
-    AirTransport
+    AirTransport,
+    GroundTransport,
+    OceanTransport
   
   },
   methods:{
