@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1>TOP LOGO</h1>
+    <h1>TOP LOGO HERE</h1>
     <h2>The following app is intended to provide guidance on the classification for 
 lithium ion and lithium metal batteries.</h2>
     <span>Select mode of transport: </span>
