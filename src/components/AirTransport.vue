@@ -1,17 +1,15 @@
 <template>
-    <div>
-        <h1>BATTERY TREE</h1>
-    </div>
+  <div id="main-area">
+ <h1>AIR TRANSPORT</h1>
+  </div>
 </template>
 
 <script>
 export default {
-    name: "BatteryTree"
+    name: "AirTransport"
 }
 </script>
 
 <style scoped>
-
-
 
 </style>
