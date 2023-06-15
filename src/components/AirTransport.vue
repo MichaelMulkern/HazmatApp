@@ -7,7 +7,7 @@
         <hr>
 
         <div id="battery-type">
-            <h3>Type of battery begin transported:</h3>
+            <h3>Type of battery being transported:</h3>
             <select v-on:change="handleType()" class="dropdown" v-model="lithiumIon">
                 <option class="drop-option" value="true">Lithium Ion</option>
                 <option class="drop-option" value="false">Lithium Metal</option>
@@ -15,7 +15,7 @@
 
         </div>
 
-        <div id="packed-type" v-show="showType">
+        <div id="packed-type" v-if="showType">
             <h3>How are the batteries packed?</h3>
             <select v-on:change="handlePacked()" class="dropdown" v-model="howPacked">
                 <option class="drop-option" value="contained">Contained Within Equipment</option>
@@ -24,7 +24,7 @@
             </select>
         </div>
 
-        <div id="use-intl" v-show="showUsa">
+        <div id="use-intl" v-if="showUsa">
             <h3>Will this shipment travel to, from, or within the the USA?</h3>
             <select v-on:change="handleUsaOrIntl()" class="dropdown" v-model="usaOrIntl">
                 <option class="drop-option" value="usa">Yes</option>
@@ -32,40 +32,45 @@
             </select>
         </div>
 
-        <div id="batt-cell" v-show="showBattOrCell">
+        <div id="batt-cell" v-if="showBattOrCell">
             <h3>Are you shipping cells or batteries?</h3>
             <select v-on:change="handleCellsOrBatteries()" class="dropdown" v-model="battOrCell">
                 <option class="drop-option" value="battery">Batteries</option>
                 <option class="drop-option" value="cell">Cells</option>
             </select>
         </div>
-<!--DIVERGE HERE-->
-<div id="batt-cell" v-show="showBattOrCell">
-            <h3>Are you shipping cells or batteries?</h3>
-            <select v-on:change="handleCellsOrBatteries()" class="dropdown" v-model="battOrCell">
-                <option class="drop-option" value="battery">Batteries</option>
-                <option class="drop-option" value="cell">Cells</option>
+        <!--DIVERGE HERE-->
+        <div id="two-batt" v-if="showTwoBatt">
+            <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
+            <select v-on:change="handleCellsOrBatteries()" class="dropdown" v-model="twoBattAnswer">
+                <option class="drop-option" value="true">Yes</option>
+                <option class="drop-option" value="false">No</option>
             </select>
         </div>
-<!--WEIGHT STUFF need to add WH as well-->
-        <div id="watt-hours">
-            
+        <!--WEIGHT STUFF need to add WH as well-->
+        <div id="lith-ion-wrapper">
+            <div id="watt-hours" v-if="showWh && isIon" v-on:input="handleShowPkgWeight()">
+                <h3>What is the watt-hour (WH) rating per {{ battOrCell }}?</h3>
+                <label for="watt-hour">WH:</label>
+                <input type="number" id="watt-hour" name="watt_hour" v-model="wattHour">
+            </div>
         </div>
-        <div id="li-content" v-show="showWeight">
-            <h3>What is the weight of lithium content in grams (g) per cell?</h3>
-            <label for="weight">Grams:</label>
-            <input type="number" id="weight" name="weight" v-model="weightOfLi">
+        <div id="lith-metal-wrapper">
+            <div id="li-content" v-if="showWeight && isMetal" v-on:input="handleShowPkgWeight()">
+                <h3>What is the weight of lithium content in grams (g) per {{ battOrCell }}?</h3>
+                <label for="weight">Grams:</label>
+                <input type="number" id="weight" name="weight" v-model="weightOfLi">
+            </div>
         </div>
-
-        <div id="package-weight" v-show="weightOfLi">
-            <h3>What is the net quantity in kilograms (KG) of cells per package?</h3>
+        <div id="package-weight" v-if="showPackageWeight">
+            <h3>What is the net quantity in kilograms (KG) of {{ battOrCell }} per package?</h3>
             <label for="pkg-weight">Kilograms:</label>
             <input type="number" id="pkg-weight" name="pkg-weight" v-model="packageWeight">
         </div>
         <!--REPORT BELOW THIS LINE-->
+        <button id="show-report" v-if="packageWeight" v-on:click="handleShowReport()">{{ reportButton }}</button>
 
-
-        <div id="report-preview" v-show="packageWeight">
+        <div id="report-preview" v-if="showReport">
             <hr>
             <h2>Report Preview</h2>
             <button>CREATE PDF (NON FUNCTIONAL)</button>
@@ -107,7 +112,14 @@ export default {
             showUsa: false,
             usaOrIntl: "",
             showBattOrCell: false,
-            battOrCell: ""
+            battOrCell: "",
+            showTwoBatt: false,
+            twoBattAnswer: "",
+            wattHour: 0,
+            showWh: false,
+            showReport: false,
+            showPkgWeight: false,
+            reportButton: "Show Report Preview"
         }
     },
     methods: {
@@ -142,28 +154,58 @@ export default {
             }
         },
         handleType() {
+
+            if (this.showWh) {
+                this.showWh = false;
+                this.showWeight = true;
+            } else if (this.showWeight) {
+                this.showWeight = false;
+                this.showWh = true;
+            }
+
             switch (this.lithiumIon) {
                 case "true":
                     this.isIon = true
                     this.isMetal = false
                     this.showType = true
+                    //this.showWeight = false
+                    //this.showPackageWeight = false
                     break;
                 case "false":
                     this.isIon = false
                     this.isMetal = true
                     this.showType = true
+                    //this.showWh = false
+                    //this.showPackageWeight = false
                     break;
             }
         },
-        handleUsaOrIntl(){
+        handleUsaOrIntl() {
             this.showBattOrCell = true;
-        },  
-        handleCellsOrBatteries(){
-            if(this.packedWith){
-                this.showWeight = true;
-            }
-            this.showWeight = true;
         },
+        handleCellsOrBatteries() {
+            if (this.isIon) {
+                this.showWh = true;
+                this.showWeight = false;
+
+            } else if (this.isMetal) {
+                this.showWeight = true;
+                this.showWh = false;
+
+            }
+        },
+        handleShowPkgWeight() {
+            this.showPackageWeight = true;
+        },
+        handleShowReport() {
+            if (this.showReport) {
+                this.reportButton = "Show Report Preview"
+                this.showReport = false;
+            } else {
+                this.reportButton = "Hide Report Preview"
+                this.showReport = true;
+            }
+        }
     },
     computed: {
         showIonOrMetal() {
@@ -221,5 +263,9 @@ export default {
     padding-bottom: 5px;
     border: 2px solid black;
     font-size: 30px;
+}
+
+#show-report {
+    margin: 10px;
 }
 </style>

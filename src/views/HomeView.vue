@@ -14,9 +14,9 @@ lithium ion and lithium metal batteries.</h2>
     <option class="drop-option" value="ground">49 CFR Road/Rail</option>
   </select>
 
-    <air-transport v-show="airBool"/>
-    <ground-transport v-show="groundBool"/>
-    <ocean-transport v-show="oceanBool"/>
+    <air-transport v-if="airBool"/>
+    <ground-transport v-if="groundBool"/>
+    <ocean-transport v-if="oceanBool"/>
     <slide-menu />
     
   </div>
