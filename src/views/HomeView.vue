@@ -3,20 +3,8 @@
     <h1>TOP LOGO HERE</h1>
     <h2>The following app is intended to provide guidance on the classification for 
 lithium ion and lithium metal batteries.</h2>
-    <span>Select mode of transport: </span>
-    <select 
-    v-on:change="showTransport()"
-    name="transport-list"
-    class="dropdown"
-    v-model="transport">
-    <option class="drop-option" value="air">Air</option>
-    <option class="drop-option" value="ocean">Maritime</option>
-    <option class="drop-option" value="ground">49 CFR Road/Rail</option>
-  </select>
 
-    <air-transport v-if="airBool"/>
-    <ground-transport v-if="groundBool"/>
-    <ocean-transport v-if="oceanBool"/>
+    <air-transport />
     <slide-menu />
     
   </div>
@@ -26,8 +14,7 @@ lithium ion and lithium metal batteries.</h2>
 // @ is an alias to /src
 import SlideMenu from '@/components/SlideMenu.vue'
 import AirTransport from '@/components/AirTransport.vue'
-import GroundTransport from '@/components/GroundTransport.vue'
-import OceanTransport from '@/components/OceanTransport.vue'
+
 
 
 export default {
@@ -43,8 +30,6 @@ export default {
   components: {
     SlideMenu,
     AirTransport,
-    GroundTransport,
-    OceanTransport
   
   },
   methods:{

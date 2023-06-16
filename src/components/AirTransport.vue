@@ -1,12 +1,18 @@
 <template>
     <div id="main-area">
-        <h2>Transporting Lithium Batteries by Air</h2>
+        <span>Select mode of transport: </span>
+        <select v-on:change="handleModeOfTransport()" name="transport-list" class="dropdown" v-model="transport">
+            <option class="drop-option" value="Air">Air</option>
+            <option class="drop-option" value="Ocean">Maritime</option>
+            <option class="drop-option" value="Ground">49 CFR Road/Rail</option>
+        </select>
+
         <p id="top-paragraph">All cells and batteries must be tested in accordance
             with the UN Manual of Tests and Criteria Part III
             Subsection 38.3 (DGR 3.9.2.6)</p>
         <hr>
-
-        <div id="battery-type">
+        <h2 v-if="showStart">Transporting Lithium Batteries by {{ transport }}</h2>
+        <div id="battery-type" v-if="showStart">
             <h3>Type of battery being transported:</h3>
             <select v-on:change="handleType()" class="dropdown" v-model="lithiumIon">
                 <option class="drop-option" value="true">Lithium Ion</option>
@@ -39,10 +45,42 @@
                 <option class="drop-option" value="cell">Cells</option>
             </select>
         </div>
-        <!--DIVERGE HERE-->
+
+
+        <!--DIVERGE ITEMS HERE-->
         <div id="two-batt" v-if="showTwoBatt">
             <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
             <select v-on:change="handleCellsOrBatteries()" class="dropdown" v-model="twoBattAnswer">
+                <option class="drop-option" value="true">Yes</option>
+                <option class="drop-option" value="false">No</option>
+            </select>
+        </div>
+
+        <div id="batts-in-package" v-if="showBattsInPkg">
+            <h3 class="question-header">How many batteries does the package include? Note: A "set" of batteries is the
+                number of individual batteries that are required to power each piece of equipment.</h3>
+            <select v-on:change="handleNumberOfBattsInPackage()" class="dropdown" v-model="battsInPkg">
+                <option class="drop-option" value="true">The minimum number of batteries required for the equipment's
+                    operations, plus no more than 2 spare sets.</option>
+                <option class="drop-option" value="false">The minimum number of batteries required for the equipment's
+                    operations, plus more than 2 spare sets</option>
+            </select>
+        </div>
+
+        <div id="four-or-more" v-if="showMoreThanFour">
+            <h3 class="question-header">Does the package contain more than 4 cells or button cells installed in the
+                equipment?</h3>
+            <select v-on:change="handleMoreThanFourCells()" class="dropdown" v-model="battsInPkg">
+                <option class="drop-option" value="op1">Contains more than 4 {{ battOrCell }}</option>
+                <option class="drop-option" value="opt2">Contains 4 {{ battOrCell }}s or less</option>
+                <option class="drop-option" value="opt3">Contains button {{ battOrCell }} (includes circuit boards)</option>
+            </select>
+        </div>
+
+        <div id="more-than-needed" v-if="showMoreThanNeeded">
+            <h3 class="question-header">Does the package contain more than 4 cells or button cells installed in the
+                equipment?</h3>
+            <select v-on:change="handleMoreThanNeededToPower()" class="dropdown" v-model="moreThanNeeded">
                 <option class="drop-option" value="true">Yes</option>
                 <option class="drop-option" value="false">No</option>
             </select>
@@ -95,8 +133,9 @@ export default {
     name: "AirTransport",
     data() {
         return {
+            transport: "",
             howPacked: "",
-            passedUn: true,
+            showStart: false,
             isIon: false,
             isMetal: false,
             showWarning: false, //TODO make a warning for not passed UN
@@ -119,17 +158,19 @@ export default {
             showWh: false,
             showReport: false,
             showPkgWeight: false,
-            reportButton: "Show Report Preview"
+            reportButton: "Show Report Preview",
+            battsInPkg: "",
+            showBattsInPkg: false,
+            showMoreThanFour: false,
+            fourOrMore: "",
+            showMoreThanNeeded: false,
+            moreThanNeeded: "",
         }
     },
     methods: {
         //Not currently used
-        handlePassed() {
-            if (this.passedUn == "true") {
-                this.showType = true;
-            } else {
-                this.showType = false;
-            }
+        handleModeOfTransport() {
+            this.showStart = true;
         },
         handlePacked() {
             switch (this.howPacked) {
@@ -205,6 +246,18 @@ export default {
                 this.reportButton = "Hide Report Preview"
                 this.showReport = true;
             }
+        },
+        handleNumberOfBattsInPackage() {
+
+        },
+        handleMoreThanFourCells() {
+
+        },
+        handleMoreThanNeededToPower() {
+
+        },
+        handleNumberContainedInConsignment() {
+
         }
     },
     computed: {
@@ -267,5 +320,4 @@ export default {
 
 #show-report {
     margin: 10px;
-}
-</style>
+}</style>
