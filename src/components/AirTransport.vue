@@ -60,9 +60,9 @@
             <h3 class="question-header">How many batteries does the package include? Note: A "set" of batteries is the
                 number of individual batteries that are required to power each piece of equipment.</h3>
             <select v-on:change="handleNumberOfBattsInPackage()" class="dropdown" v-model="battsInPkg">
-                <option class="drop-option" value="true">The minimum number of batteries required for the equipment's
+                <option class="drop-option" value="true">The minimum number of {{ battOrCell }} required for the equipment's
                     operations, plus no more than 2 spare sets.</option>
-                <option class="drop-option" value="false">The minimum number of batteries required for the equipment's
+                <option class="drop-option" value="false">The minimum number of {{ battOrCell }} required for the equipment's
                     operations, plus more than 2 spare sets</option>
             </select>
         </div>
@@ -71,40 +71,73 @@
             <h3 class="question-header">Does the package contain more than 4 cells or button cells installed in the
                 equipment?</h3>
             <select v-on:change="handleMoreThanFourCells()" class="dropdown" v-model="battsInPkg">
-                <option class="drop-option" value="op1">Contains more than 4 {{ battOrCell }}</option>
-                <option class="drop-option" value="opt2">Contains 4 {{ battOrCell }}s or less</option>
-                <option class="drop-option" value="opt3">Contains button {{ battOrCell }} (includes circuit boards)</option>
+                <option class="drop-option" value="op1">Contains more than 4 cells</option>
+                <option class="drop-option" value="opt2">Contains 4 cells or less</option>
+                <option class="drop-option" value="opt3">Contains button cells (includes circuit boards)</option>
             </select>
         </div>
 
         <div id="more-than-needed" v-if="showMoreThanNeeded">
-            <h3 class="question-header">Does the package contain more than 4 cells or button cells installed in the
-                equipment?</h3>
+            <h3 class="question-header">Does the package contain more than the number of cells necessary to power the piece
+                of equipment?</h3>
             <select v-on:change="handleMoreThanNeededToPower()" class="dropdown" v-model="moreThanNeeded">
                 <option class="drop-option" value="true">Yes</option>
                 <option class="drop-option" value="false">No</option>
             </select>
         </div>
+
+        <div id="contained-in-consignment" v-if="showConsignment">
+            <h3 class="question-header">How many of these packages are contained within your consignment?</h3>
+            <select v-on:change="handleNumberContainedInConsignment()" class="dropdown" v-model="amountInConsignment">
+                <option class="drop-option" value="true">Consignment contains no more than two such packages</option>
+                <option class="drop-option" value="false">Consignment contains more than two such packages</option>
+            </select>
+        </div>
+
+        
+        <div id="more-than-two-installed" v-if="showTwoBattsInstalled">
+            <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
+            <select v-on:change="handleMoreThanTwoBattsInstalled()" class="dropdown" v-model="twoBattsInstalled">
+                <option class="drop-option" value="true">Yes</option>
+                <option class="drop-option" value="false">No</option>
+            </select>
+        </div>
+
+        <div id="state-of-charge" v-if="showTwoBattsInstalled" v-on:input="handleStateOfCharge()">
+            <h3 class="question-header">What is the state of charge (SoC) % of the cells being shipped?</h3>
+            <label for="charge-state">State of Charge:</label>
+                <input type="number" id="charge-state" name="charge-state" v-model="stateOfCharge">
+        </div>
+
+        <div id="section-two-consignment" v-if="showSectionTwoConsignment">
+            <h3>How many of these packages are contained within your consignment?</h3>
+            <select v-on:change="handleSectionTwoPackages()" class="dropdown" v-model="sectionTwoConsignment">
+                <option class="drop-option" value="true">Consignment contains no more than two such Section II packages</option>
+                <option class="drop-option" value="false">Consignment contains more than two such Section II packages</option>
+            </select>
+        </div>
         <!--WEIGHT STUFF need to add WH as well-->
         <div id="lith-ion-wrapper">
             <div id="watt-hours" v-if="showWh && isIon" v-on:input="handleShowPkgWeight()">
-                <h3>What is the watt-hour (WH) rating per {{ battOrCell }}?</h3>
+                <h3 class="question-header">What is the watt-hour (WH) rating per {{ battOrCell }}?</h3>
                 <label for="watt-hour">WH:</label>
-                <input type="number" id="watt-hour" name="watt_hour" v-model="wattHour">
+                <input type="number" id="watt-hour" name="watt-hour" v-model="wattHour">
             </div>
         </div>
         <div id="lith-metal-wrapper">
             <div id="li-content" v-if="showWeight && isMetal" v-on:input="handleShowPkgWeight()">
-                <h3>What is the weight of lithium content in grams (g) per {{ battOrCell }}?</h3>
+                <h3 class="question-header">What is the weight of lithium content in grams (g) per {{ battOrCell }}?</h3>
                 <label for="weight">Grams:</label>
                 <input type="number" id="weight" name="weight" v-model="weightOfLi">
             </div>
         </div>
+        
         <div id="package-weight" v-if="showPackageWeight">
             <h3>What is the net quantity in kilograms (KG) of {{ battOrCell }} per package?</h3>
             <label for="pkg-weight">Kilograms:</label>
             <input type="number" id="pkg-weight" name="pkg-weight" v-model="packageWeight">
         </div>
+
         <!--REPORT BELOW THIS LINE-->
         <button id="show-report" v-if="packageWeight" v-on:click="handleShowReport()">{{ reportButton }}</button>
 
@@ -165,6 +198,14 @@ export default {
             fourOrMore: "",
             showMoreThanNeeded: false,
             moreThanNeeded: "",
+            showConsignment: false,
+            amountInConsignment: "",
+            showTwoBattsInstalled: false,
+            twoBattsInstalled: "",
+            showStateOfCharge: false,
+            stateOfCharge: 0,
+            showSectionTwoConsignment: false,
+            sectionTwoConsignment: "",
         }
     },
     methods: {
@@ -258,6 +299,16 @@ export default {
         },
         handleNumberContainedInConsignment() {
 
+        },
+        //--
+        handleMoreThanTwoBattsInstalled(){
+
+        },
+        handleStateOfCharge(){
+
+        },
+        handleSectionTwoPackages(){
+
         }
     },
     computed: {
@@ -320,4 +371,5 @@ export default {
 
 #show-report {
     margin: 10px;
-}</style>
+}
+</style>
