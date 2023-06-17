@@ -56,16 +56,7 @@
             </select>
         </div>
 
-        <div id="batts-in-package" v-if="showBattsInPkg">
-            <h3 class="question-header">How many batteries does the package include? Note: A "set" of batteries is the
-                number of individual batteries that are required to power each piece of equipment.</h3>
-            <select v-on:change="handleNumberOfBattsInPackage()" class="dropdown" v-model="battsInPkg">
-                <option class="drop-option" value="true">The minimum number of {{ battOrCell }} required for the equipment's
-                    operations, plus no more than 2 spare sets.</option>
-                <option class="drop-option" value="false">The minimum number of {{ battOrCell }} required for the equipment's
-                    operations, plus more than 2 spare sets</option>
-            </select>
-        </div>
+
 
         <div id="four-or-more" v-if="showMoreThanFour">
             <h3 class="question-header">Does the package contain more than 4 cells or button cells installed in the
@@ -103,11 +94,7 @@
             </select>
         </div>
 
-        <div id="state-of-charge" v-if="showTwoBattsInstalled" v-on:input="handleStateOfCharge()">
-            <h3 class="question-header">What is the state of charge (SoC) % of the cells being shipped?</h3>
-            <label for="charge-state">State of Charge:</label>
-                <input type="number" id="charge-state" name="charge-state" v-model="stateOfCharge">
-        </div>
+
 
         <div id="section-two-consignment" v-if="showSectionTwoConsignment">
             <h3>How many of these packages are contained within your consignment?</h3>
@@ -116,7 +103,7 @@
                 <option class="drop-option" value="false">Consignment contains more than two such Section II packages</option>
             </select>
         </div>
-        <!--WEIGHT STUFF need to add WH as well-->
+        <!--WEIGHT STUFF HERE-->
         <div id="lith-ion-wrapper">
             <div id="watt-hours" v-if="showWh && isIon" v-on:input="handleShowPkgWeight()">
                 <h3 class="question-header">What is the watt-hour (WH) rating per {{ battOrCell }}?</h3>
@@ -132,10 +119,31 @@
             </div>
         </div>
         
-        <div id="package-weight" v-if="showPackageWeight">
+        <div id="package-weight" v-if="showPackageWeight" v-on:input="handlePackageJunction()">
             <h3>What is the net quantity in kilograms (KG) of {{ battOrCell }} per package?</h3>
             <label for="pkg-weight">Kilograms:</label>
             <input type="number" id="pkg-weight" name="pkg-weight" v-model="packageWeight">
+        </div>
+<!--PROMPTS BELOW THE WEIGHTS-->
+
+<!--DONE-->
+<div id="below-weight-options" v-if:="showBelowWeightOptions">
+        <div id="state-of-charge" v-if="showStateOfCharge" v-on:input="handleStateOfCharge()">
+            <h3 class="question-header">What is the state of charge (SoC) % of the cells being shipped?</h3>
+            <label for="charge-state">State of Charge:</label>
+                <input type="number" id="charge-state" name="charge-state" v-model="stateOfCharge">
+        </div>
+    </div>
+<!--START ON THIS ONE-->
+    <div id="batts-in-package" v-if="showBattsInPkg">
+            <h3 class="question-header">How many batteries does the package include? Note: A "set" of batteries is the
+                number of individual batteries that are required to power each piece of equipment.</h3>
+            <select v-on:change="handleNumberOfBattsInPackage()" class="dropdown" v-model="battsInPkg">
+                <option class="drop-option" value="true">The minimum number of {{ battOrCell }} required for the equipment's
+                    operations, plus no more than 2 spare sets.</option>
+                <option class="drop-option" value="false">The minimum number of {{ battOrCell }} required for the equipment's
+                    operations, plus more than 2 spare sets</option>
+            </select>
         </div>
 
         <!--REPORT BELOW THIS LINE-->
@@ -172,9 +180,6 @@ export default {
             isIon: false,
             isMetal: false,
             showWarning: false, //TODO make a warning for not passed UN
-            containedIn: false,
-            packedWith: false,
-            packedAlone: false,
             lithiumIon: "",
             weightOfLi: 0,
             showType: false,
@@ -206,6 +211,7 @@ export default {
             stateOfCharge: 0,
             showSectionTwoConsignment: false,
             sectionTwoConsignment: "",
+            showBelowWeightOptions: true
         }
     },
     methods: {
@@ -214,26 +220,7 @@ export default {
             this.showStart = true;
         },
         handlePacked() {
-            switch (this.howPacked) {
-                case "contained":
-                    this.containedIn = true
-                    this.packedWith = false
-                    this.packedAlone = false
-                    this.showUsa = true
-                    break;
-                case "separate":
-                    this.containedIn = false
-                    this.packedWith = true
-                    this.packedAlone = false
-                    this.showUsa = true
-                    break;
-                case "loose":
-                    this.containedIn = false
-                    this.packedWith = false
-                    this.packedAlone = true
-                    this.showUsa = true
-                    break;
-            }
+            this.showUsa = true;
         },
         handleType() {
 
@@ -305,11 +292,17 @@ export default {
 
         },
         handleStateOfCharge(){
-
+            //Air only so far
         },
         handleSectionTwoPackages(){
 
-        }
+        },
+        handlePackageJunction(){
+            
+            if(this.transport == "Air" && this.isIon && this.howPacked == "loose"){
+                this.showStateOfCharge = true;
+            }
+        },
     },
     computed: {
         showIonOrMetal() {
