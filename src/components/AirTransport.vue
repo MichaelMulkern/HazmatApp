@@ -85,7 +85,7 @@
             </select>
         </div>
 
-        
+
         <div id="more-than-two-installed" v-if="showTwoBattsInstalled">
             <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
             <select v-on:change="handleMoreThanTwoBattsInstalled()" class="dropdown" v-model="twoBattsInstalled">
@@ -99,8 +99,10 @@
         <div id="section-two-consignment" v-if="showSectionTwoConsignment">
             <h3>How many of these packages are contained within your consignment?</h3>
             <select v-on:change="handleSectionTwoPackages()" class="dropdown" v-model="sectionTwoConsignment">
-                <option class="drop-option" value="true">Consignment contains no more than two such Section II packages</option>
-                <option class="drop-option" value="false">Consignment contains more than two such Section II packages</option>
+                <option class="drop-option" value="true">Consignment contains no more than two such Section II packages
+                </option>
+                <option class="drop-option" value="false">Consignment contains more than two such Section II packages
+                </option>
             </select>
         </div>
         <!--WEIGHT STUFF HERE-->
@@ -118,36 +120,44 @@
                 <input type="number" id="weight" name="weight" v-model="weightOfLi">
             </div>
         </div>
-        
+
         <div id="package-weight" v-if="showPackageWeight" v-on:input="handlePackageJunction()">
             <h3>What is the net quantity in kilograms (KG) of {{ battOrCell }} per package?</h3>
             <label for="pkg-weight">Kilograms:</label>
             <input type="number" id="pkg-weight" name="pkg-weight" v-model="packageWeight">
         </div>
-<!--PROMPTS BELOW THE WEIGHTS-->
+        <!--PROMPTS BELOW THE WEIGHTS-->
 
-<!--DONE-->
-<div id="below-weight-options" v-if:="showBelowWeightOptions">
-        <div id="state-of-charge" v-if="showStateOfCharge" v-on:input="handleStateOfCharge()">
-            <h3 class="question-header">What is the state of charge (SoC) % of the cells being shipped?</h3>
-            <label for="charge-state">State of Charge:</label>
+        <div id="below-weight-options" v-if:="showBelowWeightOptions">
+            <!--DONE-->
+            <div id="state-of-charge" v-if="showStateOfCharge" v-on:input="handleStateOfCharge()">
+                <h3 class="question-header">What is the state of charge (SoC) % of the {{ battOrCell }} being shipped?</h3>
+                <label for="charge-state">State of Charge:</label>
                 <input type="number" id="charge-state" name="charge-state" v-model="stateOfCharge">
-        </div>
-    </div>
-<!--START ON THIS ONE-->
-    <div id="batts-in-package" v-if="showBattsInPkg">
-            <h3 class="question-header">How many batteries does the package include? Note: A "set" of batteries is the
-                number of individual batteries that are required to power each piece of equipment.</h3>
-            <select v-on:change="handleNumberOfBattsInPackage()" class="dropdown" v-model="battsInPkg">
-                <option class="drop-option" value="true">The minimum number of {{ battOrCell }} required for the equipment's
-                    operations, plus no more than 2 spare sets.</option>
-                <option class="drop-option" value="false">The minimum number of {{ battOrCell }} required for the equipment's
-                    operations, plus more than 2 spare sets</option>
-            </select>
-        </div>
+            </div>
 
+            <!--DONE-->
+            <div id="batts-in-package" v-if="showBattsInPkg">
+                <h3 class="question-header">How many {{ battOrCell }} does the package include? Note: A "set" of {{
+                    battOrCell }} is the
+                    number of individual {{ battOrCell }} that are required to power each piece of equipment.</h3>
+                <select v-on:change="handleNumberOfBattsInPackage()" class="dropdown" v-model="battsInPkg">
+                    <option class="drop-option" value="true">The minimum number of {{ battOrCell }} required for the
+                        equipment's
+                        operations, plus no more than 2 spare sets.</option>
+                    <option class="drop-option" value="false">The minimum number of {{ battOrCell }} required for the
+                        equipment's
+                        operations, plus more than 2 spare sets</option>
+                </select>
+                <div id="batt-pkg-warn" v-if="showBattPkgWarn">
+                    <p class="warning-text">This package must be repacked accordingly so there are no more than two spare
+                        sets per each piece of equipment contained within the package or must be approved by the appropriate
+                        competent authorities.</p>
+                </div>
+            </div>
+        </div>
         <!--REPORT BELOW THIS LINE-->
-        <button id="show-report" v-if="packageWeight" v-on:click="handleShowReport()">{{ reportButton }}</button>
+        <button id="show-report" v-if="showReportButton" v-on:click="handleShowReport()">{{ reportButton }}</button>
 
         <div id="report-preview" v-if="showReport">
             <hr>
@@ -211,7 +221,9 @@ export default {
             stateOfCharge: 0,
             showSectionTwoConsignment: false,
             sectionTwoConsignment: "",
-            showBelowWeightOptions: true
+            showBelowWeightOptions: true,
+            showBattPkgWarn: false,
+            showReportButton: false
         }
     },
     methods: {
@@ -276,7 +288,13 @@ export default {
             }
         },
         handleNumberOfBattsInPackage() {
-
+            if (this.battsInPkg == "true") {
+                this.showReportButton = true;
+                this.showBattPkgWarn = false;
+            } else if (this.battsInPkg == "false") {
+                this.showBattPkgWarn = true;
+                this.showReportButton = false;
+            }
         },
         handleMoreThanFourCells() {
 
@@ -288,19 +306,20 @@ export default {
 
         },
         //--
-        handleMoreThanTwoBattsInstalled(){
+        handleMoreThanTwoBattsInstalled() {
 
         },
-        handleStateOfCharge(){
+        handleStateOfCharge() {
             //Air only so far
         },
-        handleSectionTwoPackages(){
+        handleSectionTwoPackages() {
 
         },
-        handlePackageJunction(){
-            
-            if(this.transport == "Air" && this.isIon && this.howPacked == "loose"){
+        handlePackageJunction() {
+            if (this.transport == "Air" && this.isIon && this.howPacked == "loose") {
                 this.showStateOfCharge = true;
+            } else if (this.transport == "Air" && this.howPacked == "separate") {
+                this.showBattsInPkg = true;
             }
         },
     },
@@ -364,5 +383,10 @@ export default {
 
 #show-report {
     margin: 10px;
+}
+
+.warning-text {
+    color: red;
+    border: black 2px solid;
 }
 </style>
