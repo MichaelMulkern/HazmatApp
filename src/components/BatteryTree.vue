@@ -1,24 +1,25 @@
 <template>
     <div id="main-area">
-        <span>Select mode of transport: </span>
-        <select v-on:change="handleModeOfTransport()" name="transport-list" class="dropdown" v-model="transport">
-            <option class="drop-option" value="Air">Air</option>
-            <option class="drop-option" value="Ocean">Maritime</option>
-            <option class="drop-option" value="Ground">49 CFR Road/Rail</option>
-        </select>
-
-        <p id="top-paragraph">All cells and batteries must be tested in accordance
-            with the UN Manual of Tests and Criteria Part III
-            Subsection 38.3 (DGR 3.9.2.6)</p>
-        <hr>
         <h2 v-if="showStart">Transporting Lithium Batteries by {{ transport }}</h2>
+        <div id="transport-mode" v-if="showTransport">
+            <span>Select mode of transport: </span>
+            <select name="transport-list" class="dropdown" v-model="transport">
+                <option class="drop-option" value="Air">Air</option>
+                <option class="drop-option" value="Ocean">Maritime</option>
+                <option class="drop-option" value="Ground">49 CFR Road/Rail</option>
+            </select>
+            <button v-on:click="handleModeOfTransport()">NEXT</button>
+        </div>
+
+
         <div id="battery-type" v-if="showStart">
             <h3>Type of battery being transported:</h3>
-            <select v-on:change="handleType()" class="dropdown" v-model="lithiumIon">
+            <select class="dropdown" v-model="lithiumIon">
                 <option class="drop-option" value="true">Lithium Ion</option>
                 <option class="drop-option" value="false">Lithium Metal</option>
             </select>
-
+            <p>{{ previousMenu }}</p>
+            <button v-on:click="handleBack()">BACK</button><button v-on:click="handleType()">NEXT</button>
         </div>
 
         <div id="packed-type" v-if="showType">
@@ -181,7 +182,7 @@
 
 <script>
 export default {
-    name: "AirTransport",
+    name: "BatteryTree",
     data() {
         return {
             transport: "",
@@ -223,13 +224,19 @@ export default {
             sectionTwoConsignment: "",
             showBelowWeightOptions: true,
             showBattPkgWarn: false,
-            showReportButton: false
+            showReportButton: false,
+            previousMenu: "",
+            showTransport: true
         }
     },
     methods: {
-        //Not currently used
         handleModeOfTransport() {
             this.showStart = true;
+            this.showTransport = false;
+            this.previousMenu = "showStart";
+        },
+        handleBack() {
+            
         },
         handlePacked() {
             this.showUsa = true;

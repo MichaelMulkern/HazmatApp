@@ -1,6 +1,6 @@
 <template>
-    <div>
-    <h2>OCEAN TRANSPORT NOT IMPLEMENTED YET</h2>
+  <div>
+    <h2>BATTERY TYPE</h2>
   </div>
 </template>
 
