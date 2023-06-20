@@ -1,61 +1,68 @@
 <template>
     <div id="main-area">
         <h2 v-if="showStart">Transporting Lithium Batteries by {{ transport }}</h2>
-        <div id="transport-mode" v-if="showTransport">
+        <div id="transport-mode" class="selection-block" v-if="showTransport">
             <span>Select mode of transport: </span>
             <select name="transport-list" class="dropdown" v-model="transport">
                 <option class="drop-option" value="Air">Air</option>
                 <option class="drop-option" value="Ocean">Maritime</option>
                 <option class="drop-option" value="Ground">49 CFR Road/Rail</option>
             </select>
-            <button class="nav-buttons" v-on:click="handleModeOfTransport()">NEXT</button>
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleModeOfTransport()">BEGIN</button>
+            </div>
         </div>
 
 
-        <div id="battery-type" v-if="showMetalOrIon">
+        <div id="battery-type" class="selection-block" v-if="showMetalOrIon">
             <h3>Type of battery being transported:</h3>
             <select class="dropdown" v-model="lithiumIon">
                 <option class="drop-option" value="true">Lithium Ion</option>
                 <option class="drop-option" value="false">Lithium Metal</option>
             </select>
-            <button class="nav-buttons" v-on:click="handleBack(0)">BACK</button><button class="nav-buttons"
-                v-on:click="handleType()">NEXT</button>
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(0)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleType()">NEXT</button>
+            </div>
         </div>
-
-        <div id="packed-type" v-if="showHowPacked">
+        <div id="packed-type" class="selection-block" v-if="showHowPacked">
             <h3>How are the batteries packed?</h3>
             <select class="dropdown" v-model="howPacked">
                 <option class="drop-option" value="contained">Contained Within Equipment</option>
                 <option class="drop-option" value="separate">Packed Alongside Equipment</option>
                 <option class="drop-option" value="loose">Stand Alone</option>
             </select>
-            <button class="nav-buttons" v-on:click="handleBack(1)">BACK</button><button class="nav-buttons"
-                v-on:click="handlePacked()">NEXT</button>
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(1)">BACK</button><button class="nav-buttons"
+                    v-on:click="handlePacked()">NEXT</button>
+            </div>
         </div>
-
-        <div id="use-intl" v-if="showUsa">
+        <div id="use-intl" class="selection-block" v-if="showUsa">
             <h3>Will this shipment travel to, from, or within the the USA?</h3>
             <select class="dropdown" v-model="usaOrIntl">
                 <option class="drop-option" value="usa">Yes</option>
                 <option class="drop-option" value="international">No</option>
             </select>
-            <button class="nav-buttons" v-on:click="handleBack(2)">BACK</button><button class="nav-buttons"
-                v-on:click="handleUsaOrIntl()">NEXT</button>
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(2)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleUsaOrIntl()">NEXT</button>
+            </div>
         </div>
-
-        <div id="batt-cell" v-if="showBattOrCell">
+        <div id="batt-cell" class="selection-block" v-if="showBattOrCell">
             <h3>Are you shipping cells or batteries?</h3>
             <select class="dropdown" v-model="battOrCell">
                 <option class="drop-option" value="battery">Batteries</option>
                 <option class="drop-option" value="cell">Cells</option>
             </select>
-            <button class="nav-buttons" v-on:click="handleBack(3)">BACK</button><button class="nav-buttons"
-                v-on:click="handleCellsOrBatteries()">NEXT</button>
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(3)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleCellsOrBatteries()">NEXT</button>
+            </div>
         </div>
 
 
         <!--DIVERGE ITEMS HERE-->
-        <div id="two-batt" v-if="showTwoBatt">
+        <div id="two-batt" class="selection-block" v-if="showTwoBatt">
             <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
             <select v-on:change="handleCellsOrBatteries()" class="dropdown" v-model="twoBattAnswer">
                 <option class="drop-option" value="true">Yes</option>
@@ -65,7 +72,7 @@
 
 
 
-        <div id="four-or-more" v-if="showMoreThanFour">
+        <div id="four-or-more" class="selection-block" v-if="showMoreThanFour">
             <h3 class="question-header">Does the package contain more than 4 cells or button cells installed in the
                 equipment?</h3>
             <select v-on:change="handleMoreThanFourCells()" class="dropdown" v-model="battsInPkg">
@@ -75,7 +82,7 @@
             </select>
         </div>
 
-        <div id="more-than-needed" v-if="showMoreThanNeeded">
+        <div id="more-than-needed" class="selection-block" v-if="showMoreThanNeeded">
             <h3 class="question-header">Does the package contain more than the number of cells necessary to power the piece
                 of equipment?</h3>
             <select v-on:change="handleMoreThanNeededToPower()" class="dropdown" v-model="moreThanNeeded">
@@ -84,7 +91,7 @@
             </select>
         </div>
 
-        <div id="contained-in-consignment" v-if="showConsignment">
+        <div id="contained-in-consignment" class="selection-block" v-if="showConsignment">
             <h3 class="question-header">How many of these packages are contained within your consignment?</h3>
             <select v-on:change="handleNumberContainedInConsignment()" class="dropdown" v-model="amountInConsignment">
                 <option class="drop-option" value="true">Consignment contains no more than two such packages</option>
@@ -93,7 +100,7 @@
         </div>
 
 
-        <div id="more-than-two-installed" v-if="showTwoBattsInstalled">
+        <div id="more-than-two-installed" class="selection-block" v-if="showTwoBattsInstalled">
             <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
             <select v-on:change="handleMoreThanTwoBattsInstalled()" class="dropdown" v-model="twoBattsInstalled">
                 <option class="drop-option" value="true">Yes</option>
@@ -103,7 +110,7 @@
 
 
 
-        <div id="section-two-consignment" v-if="showSectionTwoConsignment">
+        <div id="section-two-consignment" class="selection-block" v-if="showSectionTwoConsignment">
             <h3>How many of these packages are contained within your consignment?</h3>
             <select v-on:change="handleSectionTwoPackages()" class="dropdown" v-model="sectionTwoConsignment">
                 <option class="drop-option" value="true">Consignment contains no more than two such Section II packages
@@ -113,56 +120,71 @@
             </select>
         </div>
         <!--WEIGHT STUFF HERE-->
-        <div id="lith-ion-wrapper">
-            <div id="watt-hours" v-if="showWh && isIon" v-on:input="handleShowPkgWeight()">
-                <h3 class="question-header">What is the watt-hour (WH) rating per {{ battOrCell }}?</h3>
-                <label for="watt-hour">WH:</label>
-                <input type="number" id="watt-hour" name="watt-hour" v-model="wattHour">
+        <div id="watt-hours" class="selection-block" v-if="showWh && isIon">
+            <h3 class="question-header">What is the watt-hour (WH) rating per {{ battOrCell }}?</h3>
+            <label for="watt-hour">WH:</label>
+            <input type="number" id="watt-hour" name="watt-hour" v-model="wattHour">
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(4)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleShowPkgWeight()">NEXT</button>
             </div>
+
         </div>
-        <div id="lith-metal-wrapper">
-            <div id="li-content" v-if="showWeight && isMetal" v-on:input="handleShowPkgWeight()">
-                <h3 class="question-header">What is the weight of lithium content in grams (g) per {{ battOrCell }}?</h3>
-                <label for="weight">Grams:</label>
-                <input type="number" id="weight" name="weight" v-model="weightOfLi">
+        <div id="li-content" class="selection-block" v-if="showWeight && isMetal">
+            <h3 class="question-header">What is the weight of lithium content in grams (g) per {{ battOrCell }}?</h3>
+            <label for="weight">Grams:</label>
+            <input type="number" id="weight" name="weight" v-model="weightOfLi">
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(4)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleShowPkgWeight()">NEXT</button>
             </div>
+
         </div>
 
-        <div id="package-weight" v-if="showPackageWeight" v-on:input="handlePackageJunction()">
+
+        <div id="package-weight" class="selection-block" v-if="showPackageWeight">
             <h3>What is the net quantity in kilograms (KG) of {{ battOrCell }} per package?</h3>
             <label for="pkg-weight">Kilograms:</label>
             <input type="number" id="pkg-weight" name="pkg-weight" v-model="packageWeight">
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(5)">BACK</button><button class="nav-buttons"
+                    v-on:click="handlePackageJunction()">NEXT</button>
+            </div>
         </div>
         <!--PROMPTS BELOW THE WEIGHTS-->
 
-        <div id="below-weight-options" v-if:="showBelowWeightOptions">
-            <!--DONE-->
-            <div id="state-of-charge" v-if="showStateOfCharge" v-on:input="handleStateOfCharge()">
-                <h3 class="question-header">What is the state of charge (SoC) % of the {{ battOrCell }} being shipped?</h3>
-                <label for="charge-state">State of Charge:</label>
-                <input type="number" id="charge-state" name="charge-state" v-model="stateOfCharge">
-            </div>
 
-            <!--DONE-->
-            <div id="batts-in-package" v-if="showBattsInPkg">
-                <h3 class="question-header">How many {{ battOrCell }} does the package include? Note: A "set" of {{
-                    battOrCell }} is the
-                    number of individual {{ battOrCell }} that are required to power each piece of equipment.</h3>
-                <select v-on:change="handleNumberOfBattsInPackage()" class="dropdown" v-model="battsInPkg">
-                    <option class="drop-option" value="true">The minimum number of {{ battOrCell }} required for the
-                        equipment's
-                        operations, plus no more than 2 spare sets.</option>
-                    <option class="drop-option" value="false">The minimum number of {{ battOrCell }} required for the
-                        equipment's
-                        operations, plus more than 2 spare sets</option>
-                </select>
-                <div id="batt-pkg-warn" v-if="showBattPkgWarn">
-                    <p class="warning-text">This package must be repacked accordingly so there are no more than two spare
-                        sets per each piece of equipment contained within the package or must be approved by the appropriate
-                        competent authorities.</p>
-                </div>
+        <!--DONE-->
+        <div id="state-of-charge" class="selection-block" v-if="showStateOfCharge">
+            <h3 class="question-header">What is the state of charge (SoC) % of the {{ battOrCell }} being shipped?</h3>
+            <label for="charge-state">State of Charge:</label>
+            <input type="number" id="charge-state" name="charge-state" v-model="stateOfCharge">
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(6)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleStateOfCharge()">NEXT</button>
             </div>
         </div>
+
+        <!--DONE-->
+        <div id="batts-in-package" class="selection-block" v-if="showBattsInPkg">
+            <h3 class="question-header">How many {{ battOrCell }} does the package include? Note: A "set" of {{
+                battOrCell }} is the
+                number of individual {{ battOrCell }} that are required to power each piece of equipment.</h3>
+            <select v-on:change="handleNumberOfBattsInPackage()" class="dropdown" v-model="battsInPkg">
+                <option class="drop-option" value="true">The minimum number of {{ battOrCell }} required for the
+                    equipment's
+                    operations, plus no more than 2 spare sets.</option>
+                <option class="drop-option" value="false">The minimum number of {{ battOrCell }} required for the
+                    equipment's
+                    operations, plus more than 2 spare sets</option>
+            </select>
+            <div id="batt-pkg-warn" class="selection-block" v-if="showBattPkgWarn">
+                <p class="warning-text">This package must be repacked accordingly so there are no more than two spare
+                    sets per each piece of equipment contained within the package or must be approved by the appropriate
+                    competent authorities.</p>
+            </div>
+        </div>
+
         <!--REPORT BELOW THIS LINE-->
         <button id="show-report" v-if="showReportButton" v-on:click="handleShowReport()">{{ reportButton }}</button>
 
@@ -259,6 +281,25 @@ export default {
                     this.showUsa = true
                     this.showBattOrCell = false
                     break;
+                case 4:
+                    this.showWh = false
+                    this.showWeight = false
+                    this.showBattOrCell = true
+                    break;
+                case 5:
+                    if (this.isIon) {
+                        this.showWh = true;
+                        this.showPackageWeight = false;
+                    } else if (this.isMetal) {
+                        this.showWeight = true;
+                        this.showPackageWeight = false;
+                    }
+                    break;
+                case 6:
+                    this.showStateOfCharge = false;
+                    this.showPackageWeight = true;
+                    break;
+
             }
 
         },
@@ -313,6 +354,8 @@ export default {
         },
         handleShowPkgWeight() {
             this.showPackageWeight = true;
+            this.showWeight = false;
+            this.showWh = false;
         },
         handleShowReport() {
             if (this.showReport) {
@@ -346,7 +389,8 @@ export default {
 
         },
         handleStateOfCharge() {
-            //Air only so far
+            //Air only so far max 30% charge start here with a modal
+
         },
         handleSectionTwoPackages() {
 
@@ -354,8 +398,12 @@ export default {
         handlePackageJunction() {
             if (this.transport == "Air" && this.isIon && this.howPacked == "loose") {
                 this.showStateOfCharge = true;
+                this.showPackageWeight = false;
             } else if (this.transport == "Air" && this.howPacked == "separate") {
                 this.showBattsInPkg = true;
+                this.showPackageWeight = false;
+            } else {
+                this.showReportButton = true;
             }
         },
     },
@@ -424,4 +472,20 @@ export default {
 .warning-text {
     color: red;
     border: black 2px solid;
-}</style>
+}
+
+.selection-block {
+    display: block;
+}
+
+.button-wrapper {
+    margin-top: 10px;
+
+}
+
+.nav-buttons {
+    margin-left: 20px;
+    margin-right: 20px;
+    padding: 5px;
+}
+</style>
