@@ -8,43 +8,49 @@
                 <option class="drop-option" value="Ocean">Maritime</option>
                 <option class="drop-option" value="Ground">49 CFR Road/Rail</option>
             </select>
-            <button v-on:click="handleModeOfTransport()">NEXT</button>
+            <button class="nav-buttons" v-on:click="handleModeOfTransport()">NEXT</button>
         </div>
 
 
-        <div id="battery-type" v-if="showStart">
+        <div id="battery-type" v-if="showMetalOrIon">
             <h3>Type of battery being transported:</h3>
             <select class="dropdown" v-model="lithiumIon">
                 <option class="drop-option" value="true">Lithium Ion</option>
                 <option class="drop-option" value="false">Lithium Metal</option>
             </select>
-            <p>{{ previousMenu }}</p>
-            <button v-on:click="handleBack()">BACK</button><button v-on:click="handleType()">NEXT</button>
+            <button class="nav-buttons" v-on:click="handleBack(0)">BACK</button><button class="nav-buttons"
+                v-on:click="handleType()">NEXT</button>
         </div>
 
-        <div id="packed-type" v-if="showType">
+        <div id="packed-type" v-if="showHowPacked">
             <h3>How are the batteries packed?</h3>
-            <select v-on:change="handlePacked()" class="dropdown" v-model="howPacked">
+            <select class="dropdown" v-model="howPacked">
                 <option class="drop-option" value="contained">Contained Within Equipment</option>
                 <option class="drop-option" value="separate">Packed Alongside Equipment</option>
                 <option class="drop-option" value="loose">Stand Alone</option>
             </select>
+            <button class="nav-buttons" v-on:click="handleBack(1)">BACK</button><button class="nav-buttons"
+                v-on:click="handlePacked()">NEXT</button>
         </div>
 
         <div id="use-intl" v-if="showUsa">
             <h3>Will this shipment travel to, from, or within the the USA?</h3>
-            <select v-on:change="handleUsaOrIntl()" class="dropdown" v-model="usaOrIntl">
+            <select class="dropdown" v-model="usaOrIntl">
                 <option class="drop-option" value="usa">Yes</option>
                 <option class="drop-option" value="international">No</option>
             </select>
+            <button class="nav-buttons" v-on:click="handleBack(2)">BACK</button><button class="nav-buttons"
+                v-on:click="handleUsaOrIntl()">NEXT</button>
         </div>
 
         <div id="batt-cell" v-if="showBattOrCell">
             <h3>Are you shipping cells or batteries?</h3>
-            <select v-on:change="handleCellsOrBatteries()" class="dropdown" v-model="battOrCell">
+            <select class="dropdown" v-model="battOrCell">
                 <option class="drop-option" value="battery">Batteries</option>
                 <option class="drop-option" value="cell">Cells</option>
             </select>
+            <button class="nav-buttons" v-on:click="handleBack(3)">BACK</button><button class="nav-buttons"
+                v-on:click="handleCellsOrBatteries()">NEXT</button>
         </div>
 
 
@@ -187,13 +193,14 @@ export default {
         return {
             transport: "",
             howPacked: "",
+            showMetalOrIon: false,
             showStart: false,
             isIon: false,
             isMetal: false,
             showWarning: false, //TODO make a warning for not passed UN
             lithiumIon: "",
             weightOfLi: 0,
-            showType: false,
+            showHowPacked: false,
             showWeight: false,
             showPackageWeight: false,
             packageWeight: 0,
@@ -231,54 +238,76 @@ export default {
     },
     methods: {
         handleModeOfTransport() {
-            this.showStart = true;
+            this.showMetalOrIon = true;
             this.showTransport = false;
-            this.previousMenu = "showStart";
         },
-        handleBack() {
-            
+        handleBack(menuNumber) {
+            switch (menuNumber) {
+                case 0:
+                    this.showMetalOrIon = false
+                    this.showTransport = true
+                    break;
+                case 1:
+                    this.showMetalOrIon = true
+                    this.showHowPacked = false
+                    break;
+                case 2:
+                    this.showHowPacked = true
+                    this.showUsa = false
+                    break;
+                case 3:
+                    this.showUsa = true
+                    this.showBattOrCell = false
+                    break;
+            }
+
         },
         handlePacked() {
             this.showUsa = true;
+            this.showHowPacked = false;
         },
         handleType() {
 
-            if (this.showWh) {
-                this.showWh = false;
-                this.showWeight = true;
-            } else if (this.showWeight) {
-                this.showWeight = false;
-                this.showWh = true;
-            }
+            //           if (this.showWh) {
+            //               this.showWh = false;
+            //               this.showWeight = true;
+            //               this.showStart = false;
+            //           } else if (this.showWeight) {
+            //               this.showWeight = false;
+            //               this.showWh = true;
+            //               this.showStart = false;
+            //           }
 
             switch (this.lithiumIon) {
                 case "true":
                     this.isIon = true
                     this.isMetal = false
-                    this.showType = true
-                    //this.showWeight = false
-                    //this.showPackageWeight = false
+                    this.showHowPacked = true
+                    this.showMetalOrIon = false
                     break;
                 case "false":
                     this.isIon = false
                     this.isMetal = true
-                    this.showType = true
-                    //this.showWh = false
-                    //this.showPackageWeight = false
+                    this.showHowPacked = true
+                    this.showMetalOrIon = false
                     break;
             }
+
         },
         handleUsaOrIntl() {
             this.showBattOrCell = true;
+            this.showUsa = false
         },
         handleCellsOrBatteries() {
             if (this.isIon) {
                 this.showWh = true;
                 this.showWeight = false;
+                this.showBattOrCell = false;
 
             } else if (this.isMetal) {
                 this.showWeight = true;
                 this.showWh = false;
+                this.showBattOrCell = false;
 
             }
         },
@@ -395,5 +424,4 @@ export default {
 .warning-text {
     color: red;
     border: black 2px solid;
-}
-</style>
+}</style>
