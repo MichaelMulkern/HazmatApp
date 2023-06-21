@@ -184,7 +184,16 @@
                     competent authorities.</p>
             </div>
         </div>
+        <!--MODALS HERE  -->
+        <div class="warning-modal">
+            <warningModal :open="isOpen" @close="isOpen = !isOpen">
 
+                <h2 class="bold-white">Lithium ion cells and batteries at a state of charge (SoC) exceeding 30% of their
+                    rated capacity may only be shipped with the approval of the State of Origin and the State of the
+                    Operator (see Special Provision A331).</h2>
+
+            </warningModal>
+        </div>
         <!--REPORT BELOW THIS LINE-->
         <button id="show-report" v-if="showReportButton" v-on:click="handleShowReport()">{{ reportButton }}</button>
 
@@ -209,8 +218,15 @@
 </template>
 
 <script>
+import warningModal from "@/components/WarningModal.vue";
+import { ref } from "vue";
 export default {
     name: "BatteryTree",
+    components: { warningModal },
+    setup() {
+        const isOpen = ref(false)
+        return { isOpen }
+    },
     data() {
         return {
             transport: "",
@@ -389,7 +405,13 @@ export default {
 
         },
         handleStateOfCharge() {
-            //Air only so far max 30% charge start here with a modal
+            //Air only max 30% charge 
+            if (this.stateOfCharge > 30) {
+                this.isOpen = true;
+            }else {
+                this.showReportButton = true;
+            }
+            
 
         },
         handleSectionTwoPackages() {
@@ -471,7 +493,12 @@ export default {
 
 .warning-text {
     color: red;
-    border: black 2px solid;
+    font-weight: bold;
+}
+
+.bold-white {
+    color:white;
+    font-weight: bold;
 }
 
 .selection-block {
