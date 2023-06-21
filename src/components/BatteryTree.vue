@@ -62,25 +62,7 @@
 
 
         <!--DIVERGE ITEMS HERE-->
-        <div id="two-batt" class="selection-block" v-if="showTwoBatt">
-            <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
-            <select v-on:change="handleCellsOrBatteries()" class="dropdown" v-model="twoBattAnswer">
-                <option class="drop-option" value="true">Yes</option>
-                <option class="drop-option" value="false">No</option>
-            </select>
-        </div>
 
-
-
-        <div id="four-or-more" class="selection-block" v-if="showMoreThanFour">
-            <h3 class="question-header">Does the package contain more than 4 cells or button cells installed in the
-                equipment?</h3>
-            <select v-on:change="handleMoreThanFourCells()" class="dropdown" v-model="battsInPkg">
-                <option class="drop-option" value="op1">Contains more than 4 cells</option>
-                <option class="drop-option" value="opt2">Contains 4 cells or less</option>
-                <option class="drop-option" value="opt3">Contains button cells (includes circuit boards)</option>
-            </select>
-        </div>
 
         <div id="more-than-needed" class="selection-block" v-if="showMoreThanNeeded">
             <h3 class="question-header">Does the package contain more than the number of cells necessary to power the piece
@@ -98,17 +80,6 @@
                 <option class="drop-option" value="false">Consignment contains more than two such packages</option>
             </select>
         </div>
-
-
-        <div id="more-than-two-installed" class="selection-block" v-if="showTwoBattsInstalled">
-            <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
-            <select v-on:change="handleMoreThanTwoBattsInstalled()" class="dropdown" v-model="twoBattsInstalled">
-                <option class="drop-option" value="true">Yes</option>
-                <option class="drop-option" value="false">No</option>
-            </select>
-        </div>
-
-
 
         <div id="section-two-consignment" class="selection-block" v-if="showSectionTwoConsignment">
             <h3>How many of these packages are contained within your consignment?</h3>
@@ -152,9 +123,33 @@
             </div>
         </div>
         <!--PROMPTS BELOW THE WEIGHTS-->
+        <div id="two-batt" class="selection-block" v-if="showTwoBatt">
+            <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
+            <select class="dropdown" v-model="twoBattAnswer">
+                <option class="drop-option" value="true">Yes</option>
+                <option class="drop-option" value="false">No</option>
+            </select>
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(6)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleTwoBatt()">NEXT</button>
+            </div>
+        </div>
 
+        <div id="four-or-more" class="selection-block" v-if="showMoreThanFour">
+            <h3 class="question-header">Does the package contain more than 4 cells or button cells installed in the
+                equipment?</h3>
+            <select class="dropdown" v-model="cellsInPkg">
+                <option class="drop-option" value="more">Contains more than 4 cells</option>
+                <option class="drop-option" value="less">Contains 4 cells or less</option>
+                <option class="drop-option" value="button">Contains button cells (includes circuit boards)</option>
+            </select>
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(6)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleMoreThanFourCells()">NEXT</button>
+            </div>
+        </div>
 
-        <!--DONE-->
+        <!--DOUBLE DONE-->
         <div id="state-of-charge" class="selection-block" v-if="showStateOfCharge">
             <h3 class="question-header">What is the state of charge (SoC) % of the {{ battOrCell }} being shipped?</h3>
             <label for="charge-state">State of Charge:</label>
@@ -165,12 +160,12 @@
             </div>
         </div>
 
-        <!--DONE-->
+        <!--DONE DOUBLE-->
         <div id="batts-in-package" class="selection-block" v-if="showBattsInPkg">
             <h3 class="question-header">How many {{ battOrCell }} does the package include? Note: A "set" of {{
                 battOrCell }} is the
                 number of individual {{ battOrCell }} that are required to power each piece of equipment.</h3>
-            <select v-on:change="handleNumberOfBattsInPackage()" class="dropdown" v-model="battsInPkg">
+            <select class="dropdown" v-model="battsInPkg">
                 <option class="drop-option" value="true">The minimum number of {{ battOrCell }} required for the
                     equipment's
                     operations, plus no more than 2 spare sets.</option>
@@ -178,20 +173,23 @@
                     equipment's
                     operations, plus more than 2 spare sets</option>
             </select>
-            <div id="batt-pkg-warn" class="selection-block" v-if="showBattPkgWarn">
-                <p class="warning-text">This package must be repacked accordingly so there are no more than two spare
-                    sets per each piece of equipment contained within the package or must be approved by the appropriate
-                    competent authorities.</p>
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(6)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleNumberOfBattsInPackage()">NEXT</button>
             </div>
         </div>
         <!--MODALS HERE  -->
         <div class="warning-modal">
-            <warningModal :open="isOpen" @close="isOpen = !isOpen">
+            <warningModal :open="isOpen" @close="isOpen = !isOpen" id="warning-box">
 
-                <h2 class="bold-white">Lithium ion cells and batteries at a state of charge (SoC) exceeding 30% of their
+                <h2 class="bold-white" v-show="socWarning">Lithium ion cells and batteries at a state of charge (SoC)
+                    exceeding 30% of their
                     rated capacity may only be shipped with the approval of the State of Origin and the State of the
                     Operator (see Special Provision A331).</h2>
-
+                <h2 class="bold-white" v-show="moreThanTwoWarning">This package must be repacked accordingly so there are no
+                    more than two spare
+                    sets per each piece of equipment contained within the package or must be approved by the appropriate
+                    competent authorities.</h2>
             </warningModal>
         </div>
         <!--REPORT BELOW THIS LINE-->
@@ -268,10 +266,12 @@ export default {
             showSectionTwoConsignment: false,
             sectionTwoConsignment: "",
             showBelowWeightOptions: true,
-            showBattPkgWarn: false,
             showReportButton: false,
             previousMenu: "",
-            showTransport: true
+            showTransport: true,
+            socWarning: false,
+            moreThanTwoWarning: false,
+            cellsInPkg: "",
         }
     },
     methods: {
@@ -306,12 +306,17 @@ export default {
                     if (this.isIon) {
                         this.showWh = true;
                         this.showPackageWeight = false;
+                        this.showReportButton = false;
                     } else if (this.isMetal) {
                         this.showWeight = true;
                         this.showPackageWeight = false;
+                        this.showReportButton = false;
                     }
                     break;
                 case 6:
+                    this.showMoreThanFour = false;
+                    this.showReportButton = false;
+                    this.showBattsInPkg = false;
                     this.showStateOfCharge = false;
                     this.showPackageWeight = true;
                     break;
@@ -382,17 +387,25 @@ export default {
                 this.showReport = true;
             }
         },
-        handleNumberOfBattsInPackage() {
-            if (this.battsInPkg == "true") {
-                this.showReportButton = true;
-                this.showBattPkgWarn = false;
-            } else if (this.battsInPkg == "false") {
-                this.showBattPkgWarn = true;
-                this.showReportButton = false;
-            }
-        },
         handleMoreThanFourCells() {
-
+            if(this.cellsInPkg == "more"){
+                if(this.transport == "Ocean" || this.transport == "Ground"){
+                    this.showReportButton = true;
+                }else if(this.transport == "Air"){
+                    this.showMoreThanNeeded = true;
+                    this.showMoreThanFour = false;
+                }
+            }else if(this.cellsInPkg == "less"){
+                if(this.transport == "Ocean" || this.transport == "Ground"){
+                    this.showConsignment = true;
+                    this.showMoreThanFour = false;
+                }else if(this.transport == "Air"){
+                    this.showMoreThanNeeded = true;
+                    this.showMoreThanFour = false;
+                }
+            }else if(this.cellsInPkg == "button"){
+                this.showReportButton;
+            }
         },
         handleMoreThanNeededToPower() {
 
@@ -400,18 +413,30 @@ export default {
         handleNumberContainedInConsignment() {
 
         },
-        //--
-        handleMoreThanTwoBattsInstalled() {
+        handleTwoBatt() {
 
         },
+        handleNumberOfBattsInPackage() {
+            this.socWarning = false;
+            this.moreThanTwoWarning = false;
+            if (this.battsInPkg == "false") {
+                this.moreThanTwoWarning = true;
+                this.isOpen = true;
+            } else {
+                this.showReportButton = true;
+            }
+        },
         handleStateOfCharge() {
+            this.socWarning = false;
+            this.moreThanTwoWarning = false;
             //Air only max 30% charge 
             if (this.stateOfCharge > 30) {
                 this.isOpen = true;
-            }else {
+                this.socWarning = true;
+            } else {
                 this.showReportButton = true;
             }
-            
+
 
         },
         handleSectionTwoPackages() {
@@ -423,6 +448,10 @@ export default {
                 this.showPackageWeight = false;
             } else if (this.transport == "Air" && this.howPacked == "separate") {
                 this.showBattsInPkg = true;
+                this.showPackageWeight = false;
+            } else if (this.howPacked == "contained" && this.battOrCell == "cell"){
+                //Transport and li doesn't matter
+                this.showMoreThanFour = true;
                 this.showPackageWeight = false;
             } else {
                 this.showReportButton = true;
@@ -497,7 +526,7 @@ export default {
 }
 
 .bold-white {
-    color:white;
+    color: white;
     font-weight: bold;
 }
 
@@ -506,13 +535,33 @@ export default {
 }
 
 .button-wrapper {
-    margin-top: 10px;
-
+    margin-top: 15px;
 }
 
 .nav-buttons {
-    margin-left: 20px;
-    margin-right: 20px;
-    padding: 5px;
+    margin-left: 70px;
+    margin-right: 70px;
+}
+
+
+.nav-buttons {
+    background-image: linear-gradient(-180deg, #37AEE2 0%, #1E96C8 100%);
+    border-radius: .5rem;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0.5rem 0.75rem;
+    text-decoration: none;
+    width: auto;
+    border: 0;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+.nav-buttons:hover {
+    background-image: linear-gradient(-180deg, #1D95C9 0%, #17759C 100%);
 }
 </style>
