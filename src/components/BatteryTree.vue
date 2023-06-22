@@ -60,8 +60,37 @@
             </div>
         </div>
 
+        <!--WEIGHT STUFF HERE-->
+        <div id="watt-hours" class="selection-block" v-if="showWh && isIon">
+            <h3 class="question-header">What is the watt-hour (WH) rating per {{ battOrCell }}?</h3>
+            <label for="watt-hour">WH:</label>
+            <input type="number" id="watt-hour" name="watt-hour" v-model="wattHour">
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(4)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleShowPkgWeight()">NEXT</button>
+            </div>
+        </div>
 
-        <!--DIVERGE ITEMS HERE-->
+        <div id="li-content" class="selection-block" v-if="showWeight && isMetal">
+            <h3 class="question-header">What is the weight of lithium content in grams (g) per {{ battOrCell }}?</h3>
+            <label for="weight">Grams:</label>
+            <input type="number" id="weight" name="weight" v-model="weightOfLi">
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(4)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleShowPkgWeight()">NEXT</button>
+            </div>
+        </div>
+
+        <div id="package-weight" class="selection-block" v-if="showPackageWeight">
+            <h3>What is the net quantity in kilograms (KG) of {{ battOrCell }} per package?</h3>
+            <label for="pkg-weight">Kilograms:</label>
+            <input type="number" id="pkg-weight" name="pkg-weight" v-model="packageWeight">
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(5)">BACK</button><button class="nav-buttons"
+                    v-on:click="handlePackageJunction()">NEXT</button>
+            </div>
+        </div>
+        <!--PROMPTS BELOW THE WEIGHTS-->
 
         <div id="two-batt" class="selection-block" v-if="showTwoBatt">
             <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
@@ -75,50 +104,20 @@
             </div>
         </div>
 
-
-
+        <!--DONE-->
         <div id="contained-in-consignment" class="selection-block" v-if="showConsignment">
             <h3 class="question-header">How many of these packages are contained within your consignment?</h3>
-            <select v-on:change="handleNumberContainedInConsignment()" class="dropdown" v-model="amountInConsignment">
+            <select class="dropdown" v-model="amountInConsignment">
                 <option class="drop-option" value="true">Consignment contains no more than two such packages</option>
                 <option class="drop-option" value="false">Consignment contains more than two such packages</option>
             </select>
-        </div>
-
-
-        <!--WEIGHT STUFF HERE-->
-        <div id="watt-hours" class="selection-block" v-if="showWh && isIon">
-            <h3 class="question-header">What is the watt-hour (WH) rating per {{ battOrCell }}?</h3>
-            <label for="watt-hour">WH:</label>
-            <input type="number" id="watt-hour" name="watt-hour" v-model="wattHour">
             <div class="button-wrapper">
-                <button class="nav-buttons" v-on:click="handleBack(4)">BACK</button><button class="nav-buttons"
-                    v-on:click="handleShowPkgWeight()">NEXT</button>
-            </div>
-
-        </div>
-        <div id="li-content" class="selection-block" v-if="showWeight && isMetal">
-            <h3 class="question-header">What is the weight of lithium content in grams (g) per {{ battOrCell }}?</h3>
-            <label for="weight">Grams:</label>
-            <input type="number" id="weight" name="weight" v-model="weightOfLi">
-            <div class="button-wrapper">
-                <button class="nav-buttons" v-on:click="handleBack(4)">BACK</button><button class="nav-buttons"
-                    v-on:click="handleShowPkgWeight()">NEXT</button>
-            </div>
-
-        </div>
-
-
-        <div id="package-weight" class="selection-block" v-if="showPackageWeight">
-            <h3>What is the net quantity in kilograms (KG) of {{ battOrCell }} per package?</h3>
-            <label for="pkg-weight">Kilograms:</label>
-            <input type="number" id="pkg-weight" name="pkg-weight" v-model="packageWeight">
-            <div class="button-wrapper">
-                <button class="nav-buttons" v-on:click="handleBack(5)">BACK</button><button class="nav-buttons"
-                    v-on:click="handlePackageJunction()">NEXT</button>
+                <button class="nav-buttons" v-on:click="handleBack(9)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleNumberContainedInConsignment()">NEXT</button>
             </div>
         </div>
-        <!--PROMPTS BELOW THE WEIGHTS-->
+
+        <!--DONE-->
         <div id="section-two-consignment" class="selection-block" v-if="showSectionTwoConsignment">
             <h3>How many of these packages are contained within your consignment?</h3>
             <select class="dropdown" v-model="sectionTwoConsignment">
@@ -128,9 +127,9 @@
                 </option>
             </select>
             <div class="button-wrapper">
-                    <button class="nav-buttons" v-on:click="handleBack(8)">BACK</button><button class="nav-buttons"
-                        v-on:click="handleSectionTwoPackages()">NEXT</button>
-                </div>
+                <button class="nav-buttons" v-on:click="handleBack(8)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleSectionTwoPackages()">NEXT</button>
+            </div>
         </div>
         <!--DONE-->
         <div id="more-than-needed" class="selection-block" v-if="showMoreThanNeeded">
@@ -288,6 +287,11 @@ export default {
             moreThanTwoWarning: false,
             cellsInPkg: "",
             moreThanNeededWarning: false,
+            showFiveHundredGrams: false,
+            showTwelveGrams: false,
+            twelveGramAnswer: "",
+            fiveHundredGramAnswer: "",
+            showMoreThanTwoWithButtonBatt: false,
 
         }
     },
@@ -335,16 +339,34 @@ export default {
                     this.showReportButton = false;
                     this.showBattsInPkg = false;
                     this.showStateOfCharge = false;
+                    this.showTwoBatt = false;
                     this.showPackageWeight = true;
                     break;
                 case 7:
+                    this.showReportButton = false;
                     this.showMoreThanNeeded = false;
-                    this.showMoreThanFour = true;
+                    if (this.battOrCell == "battery") {
+                        this.showTwoBatt = true;
+                    } else if (this.battOrCell == "cell") {
+                        this.showMoreThanFour = true;
+                    }
                     break;
                 case 8:
                     this.showReportButton = false;
                     this.showSectionTwoConsignment = false;
                     this.showMoreThanNeeded = true;
+                    break;
+                case 9:
+                    this.showReportButton = false;
+                    if (this.isIon) {
+                        if (this.battOrCell == "battery") {
+                            this.showTwoBatt = true;
+                            this.showConsignment = false;
+                        } else if (this.battOrCell == "cell") {
+                            this.showMoreThanFour = true;
+                            this.showConsignment = false;
+                        }
+                    }
             }
 
         },
@@ -439,15 +461,45 @@ export default {
                 this.moreThanNeededWarning = true;
                 this.isOpen = true;
             } else if (this.moreThanNeeded == "false") {
-                this.showSectionTwoConsignment = true;
-                this.showMoreThanNeeded = false;
+                if (this.isIon && this.battOrCell == "cell" && this.transport == "Air") {
+                    if (this.cellsInPkg == "more") {
+                        this.showReportButton = true;
+                    } else if (this.cellsInPkg == "less") {
+                        this.showSectionTwoConsignment = true;
+                        this.showMoreThanNeeded = false;
+                    }
+                } else if (this.isMetal && this.transport == "Air") {
+                    this.showReportButton = true;
+                } else if (this.isIon && this.twoBattAnswer == "true" && this.transport == "Air") {
+                    this.showReportButton = true;
+                } else if (this.isIon && this.twoBattAnswer == "false" && this.transport == "Air") {
+                    this.showSectionTwoConsignment = true;
+                    this.showMoreThanNeeded = false;
+                }
             }
         },
         handleNumberContainedInConsignment() {
-
+            if (this.amountInConsignment == "true" || this.amountInConsignment == "false") {
+                this.showReportButton = true;
+            }
         },
         handleTwoBatt() {
-
+            if (this.twoBattAnswer == "true") {
+                if (this.transport == "Ocean") {
+                    this.showReportButton = true;
+                } else if (this.transport == "Air") {
+                    this.showMoreThanNeeded = true;
+                    this.showTwoBatt = false;
+                }
+            } else if (this.twoBattAnswer == "false") {
+                if (this.transport == "Ocean") {
+                    this.showConsignment = true;
+                    this.showTwoBatt = false;
+                } else if (this.transport == "Air") {
+                    this.showMoreThanNeeded = true;
+                    this.showTwoBatt = false;
+                }
+            }
         },
         handleNumberOfBattsInPackage() {
             this.socWarning = false;
@@ -471,11 +523,9 @@ export default {
             } else {
                 this.showReportButton = true;
             }
-
-
         },
         handleSectionTwoPackages() {
-            if(this.sectionTwoConsignment == "true" || this.sectionTwoConsignment == "false"){
+            if (this.sectionTwoConsignment == "true" || this.sectionTwoConsignment == "false") {
                 this.showReportButton = true;
             }
         },
@@ -487,8 +537,20 @@ export default {
                 this.showBattsInPkg = true;
                 this.showPackageWeight = false;
             } else if (this.howPacked == "contained" && this.battOrCell == "cell") {
-                //Transport and li doesn't matter
+                //Transport doesn't matter
                 this.showMoreThanFour = true;
+                this.showPackageWeight = false;
+            } else if (this.howPacked == "contained" && this.battOrCell == "battery" && this.isIon) {
+                if (this.transport == "Ground") {
+                    this.showMoreThanTwoWithButtonBatt = true;
+                    this.this.showPackageWeight = false;
+                } else {
+                    this.showTwoBatt = true;
+                    this.showPackageWeight = false;
+                }
+            } else if (this.howPacked == "contained" && this.battOrCell == "battery" && this.isMetal) {
+                //Finish this one later no html for this section this belongs in the grams weight section
+                this.showFiveHundredGrams = true;
                 this.showPackageWeight = false;
             } else {
                 this.showReportButton = true;
