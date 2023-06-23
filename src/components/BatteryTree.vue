@@ -92,6 +92,18 @@
         </div>
         <!--PROMPTS BELOW THE WEIGHTS-->
 
+        <div id="grams-question" class="selection-block" v-if="showGramsQuestion">
+            <h3>Does the quantity of lithium metal in the equipment exceed {{ gramsOption }}?</h3>
+            <select class="dropdown" v-model="gramsAnswer">
+                <option class="drop-option" value="true">Yes</option>
+                <option class="drop-option" value="false">No</option>
+            </select>
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(6)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleGramsQuestion()">NEXT</button>
+            </div>
+        </div>
+
         <div id="a-set-question" class="selection-block" v-if="showASetQuestion">
             <h3 class="question-header">How many {{ battOrCell }} does the package include? Note: A "set" of {{ battOrCell
             }} is the
@@ -236,6 +248,9 @@
                 <h2 class="bold-white" v-show="aSetWarning">This package must be repacked accordingly so there are
                     no more than two spare sets per each piece of equipment contained within the package or must be approved
                     by the appropriate competent authorities.</h2>
+                <h2 class="bold-white" v-show="gramsWarning">The international air regulations limit the quantity of lithium
+                    metal in any piece of equipment to a maximum of 12 g per cell and 500 g per battery. This package must
+                    be repacked accordingly or must be approved by the appropriate competent authorities.</h2>
             </warningModal>
         </div>
         <!--REPORT BELOW THIS LINE-->
@@ -319,15 +334,15 @@ export default {
             moreThanTwoWarning: false,
             cellsInPkg: "",
             moreThanNeededWarning: false,
-            showFiveHundredGrams: false,
-            showTwelveGrams: false,
-            twelveGramAnswer: "",
-            fiveHundredGramAnswer: "",
             showTwoBattRailOnly: false,
             cellsInPkgRailOnly: "",
             showASetQuestion: false,
             aSetAnswer: "",
             aSetWarning: false,
+            gramsOption: "",
+            showGramsQuestion: false,
+            gramsAnswer: "",
+            gramsWarning: false,
 
         }
     },
@@ -378,15 +393,19 @@ export default {
                     this.showTwoBatt = false;
                     this.showTwoBattRailOnly = false;
                     this.showASetQuestion = false;
+                    this.showGramsQuestion = false;
                     this.showPackageWeight = true;
                     break;
                 case 7:
                     this.showReportButton = false;
                     this.showMoreThanNeeded = false;
-                    if (this.battOrCell == "battery") {
+                    this.showGramsQuestion = false;
+                    if (this.battOrCell == "battery" && this.isIon) {
                         this.showTwoBatt = true;
-                    } else if (this.battOrCell == "cell") {
+                    } else if (this.battOrCell == "cell" && this.isIon) {
                         this.showMoreThanFour = true;
+                    } else if (this.transport == "Air" && this.isMetal){
+                        this.showGramsQuestion = true;
                     }
                     break;
                 case 8:
@@ -496,6 +515,7 @@ export default {
             this.moreThanTwoWarning = false;
             this.moreThanNeededWarning = false;
             this.aSetWarning = false;
+            this.gramsWarning = false;
             if (this.moreThanNeeded == "true") {
                 this.moreThanNeededWarning = true;
                 this.isOpen = true;
@@ -545,6 +565,7 @@ export default {
             this.moreThanTwoWarning = false;
             this.moreThanNeededWarning = false;
             this.aSetWarning = false;
+            this.gramsWarning = false;
             if (this.battsInPkg == "false") {
                 this.moreThanTwoWarning = true;
                 this.isOpen = true;
@@ -557,6 +578,7 @@ export default {
             this.moreThanTwoWarning = false;
             this.moreThanNeededWarning = false;
             this.aSetWarning = false;
+            this.gramsWarning = false;
             //Air only max 30% charge 
             if (this.stateOfCharge > 30) {
                 this.isOpen = true;
@@ -577,7 +599,7 @@ export default {
             } else if (this.transport == "Air" && this.howPacked == "separate") {
                 this.showBattsInPkg = true;
                 this.showPackageWeight = false;
-            } else if (this.howPacked == "contained" && this.battOrCell == "cell") {
+            } else if (this.howPacked == "contained" && this.battOrCell == "cell" && this.isIon) {
                 //Transport doesn't matter
                 this.showMoreThanFour = true;
                 this.showPackageWeight = false;
@@ -589,9 +611,13 @@ export default {
                     this.showTwoBatt = true;
                     this.showPackageWeight = false;
                 }
-            } else if (this.howPacked == "contained" && this.battOrCell == "battery" && this.isMetal) {
-                //Finish this one later no html for this section this belongs in the grams weight section
-                this.showFiveHundredGrams = true;
+            } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal) {
+                if (this.battOrCell == "battery") {
+                    this.gramsOption = "500 grams per battery";
+                } else if (this.battOrCell == "cell") {
+                    this.gramsOption = "12 grams per cell";
+                }
+                this.showGramsQuestion = true;
                 this.showPackageWeight = false;
             } else {
                 this.showReportButton = true;
@@ -612,11 +638,26 @@ export default {
             this.moreThanTwoWarning = false;
             this.moreThanNeededWarning = false;
             this.aSetWarning = false;
+            this.gramsWarning = false;
             if (this.aSetAnswer == "less") {
                 this.showReportButton = true;
             } else if (this.aSetAnswer == "more") {
                 this.isOpen = true;
                 this.aSetWarning = true;
+            }
+        },
+        handleGramsQuestion() {
+            this.socWarning = false;
+            this.moreThanTwoWarning = false;
+            this.moreThanNeededWarning = false;
+            this.aSetWarning = false;
+            this.gramsWarning = false;
+            if (this.gramsAnswer == "true") {
+                this.isOpen = true;
+                this.gramsWarning = true;
+            } else if (this.gramsAnswer == "false") {
+                this.showMoreThanNeeded = true;
+                this.showGramsQuestion = false;
             }
         }
     },
