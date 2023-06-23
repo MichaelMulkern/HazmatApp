@@ -136,8 +136,8 @@
         <div id="two-batt" class="selection-block" v-if="showTwoBatt">
             <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
             <select class="dropdown" v-model="twoBattAnswer">
-                <option class="drop-option" value="true">Yes</option>
-                <option class="drop-option" value="false">No</option>
+                <option class="drop-option" value="true">Contains more than 2 batteries</option>
+                <option class="drop-option" value="false">Contains 2 batteries or less</option>
             </select>
             <div class="button-wrapper">
                 <button class="nav-buttons" v-on:click="handleBack(6)">BACK</button><button class="nav-buttons"
@@ -145,7 +145,6 @@
             </div>
         </div>
 
-        <!--DONE-->
         <div id="contained-in-consignment" class="selection-block" v-if="showConsignment">
             <h3 class="question-header">How many of these packages are contained within your consignment?</h3>
             <select class="dropdown" v-model="amountInConsignment">
@@ -158,7 +157,6 @@
             </div>
         </div>
 
-        <!--DONE-->
         <div id="section-two-consignment" class="selection-block" v-if="showSectionTwoConsignment">
             <h3>How many of these packages are contained within your consignment?</h3>
             <select class="dropdown" v-model="sectionTwoConsignment">
@@ -172,7 +170,7 @@
                     v-on:click="handleSectionTwoPackages()">NEXT</button>
             </div>
         </div>
-        <!--DONE-->
+
         <div id="more-than-needed" class="selection-block" v-if="showMoreThanNeeded">
             <h3 class="question-header">Does the package contain more than the number of cells necessary to power the piece
                 of equipment?</h3>
@@ -186,7 +184,7 @@
             </div>
         </div>
 
-        <!--DONE-->
+
         <div id="four-or-more" class="selection-block" v-if="showMoreThanFour">
             <h3 class="question-header">Does the package contain more than 4 cells or button cells installed in the
                 equipment?</h3>
@@ -201,7 +199,18 @@
             </div>
         </div>
 
-        <!--DOUBLE DONE-->
+        <div id="four-or-more-rail-only" class="selection-block" v-if="showFourBattRailOnly">
+            <h3 class="question-header">Does the package contain more than 4 cells installed in the equipment?</h3>
+            <select class="dropdown" v-model="fourBattRailOnly">
+                <option class="drop-option" value="more">Contains more than 4 cells</option>
+                <option class="drop-option" value="less">Contains 4 cells or less</option>
+            </select>
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(5)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleMoreThanFourRailOnly()">NEXT</button>
+            </div>
+        </div>
+
         <div id="state-of-charge" class="selection-block" v-if="showStateOfCharge">
             <h3 class="question-header">What is the state of charge (SoC) % of the {{ battOrCell }} being shipped?</h3>
             <label for="charge-state">State of Charge:</label>
@@ -212,7 +221,7 @@
             </div>
         </div>
 
-        <!--DONE DOUBLE-->
+
         <div id="batts-in-package" class="selection-block" v-if="showBattsInPkg">
             <h3 class="question-header">How many {{ battOrCell }} does the package include? Note: A "set" of {{
                 battOrCell }} is the
@@ -343,6 +352,8 @@ export default {
             showGramsQuestion: false,
             gramsAnswer: "",
             gramsWarning: false,
+            fourBattRailOnly: "",
+            showFourBattRailOnly: false,
 
         }
     },
@@ -372,6 +383,7 @@ export default {
                 case 4:
                     this.showWh = false
                     this.showWeight = false
+                    this.showReportButton = false
                     this.showBattOrCell = true
                     break;
                 case 5:
@@ -383,18 +395,31 @@ export default {
                         this.showWeight = true;
                         this.showPackageWeight = false;
                         this.showReportButton = false;
+                        this.showFourBattRailOnly = false;
                     }
                     break;
                 case 6:
-                    this.showMoreThanFour = false;
-                    this.showReportButton = false;
-                    this.showBattsInPkg = false;
-                    this.showStateOfCharge = false;
-                    this.showTwoBatt = false;
-                    this.showTwoBattRailOnly = false;
-                    this.showASetQuestion = false;
-                    this.showGramsQuestion = false;
-                    this.showPackageWeight = true;
+                    if (this.transport == "Ground" && this.howPacked == "contained") {
+                        this.showWeight = true;
+                        this.showMoreThanFour = false;
+                        this.showReportButton = false;
+                        this.showBattsInPkg = false;
+                        this.showStateOfCharge = false;
+                        this.showTwoBatt = false;
+                        this.showTwoBattRailOnly = false;
+                        this.showASetQuestion = false;
+                        this.showGramsQuestion = false;
+                    } else {
+                        this.showMoreThanFour = false;
+                        this.showReportButton = false;
+                        this.showBattsInPkg = false;
+                        this.showStateOfCharge = false;
+                        this.showTwoBatt = false;
+                        this.showTwoBattRailOnly = false;
+                        this.showASetQuestion = false;
+                        this.showGramsQuestion = false;
+                        this.showPackageWeight = true;
+                    }
                     break;
                 case 7:
                     this.showReportButton = false;
@@ -404,7 +429,7 @@ export default {
                         this.showTwoBatt = true;
                     } else if (this.battOrCell == "cell" && this.isIon) {
                         this.showMoreThanFour = true;
-                    } else if (this.transport == "Air" && this.isMetal){
+                    } else if (this.transport == "Air" && this.isMetal) {
                         this.showGramsQuestion = true;
                     }
                     break;
@@ -423,26 +448,28 @@ export default {
                             this.showMoreThanFour = true;
                             this.showConsignment = false;
                         }
+                    } else if (this.isMetal) {
+                        if (this.battOrCell == "cell") {
+                            this.showFourBattRailOnly = true;
+                            this.showConsignment = false;
+                        } else if (this.battOrCell == "battery") {
+                            this.showTwoBatt = true;
+                            this.showConsignment = false;
+                        }
                     }
             }
 
         },
         handlePacked() {
-            this.showUsa = true;
-            this.showHowPacked = false;
+            if (this.transport == "Ground") {
+                this.showBattOrCell = true;
+                this.showHowPacked = false;
+            } else {
+                this.showUsa = true;
+                this.showHowPacked = false;
+            }
         },
         handleType() {
-
-            //           if (this.showWh) {
-            //               this.showWh = false;
-            //               this.showWeight = true;
-            //               this.showStart = false;
-            //           } else if (this.showWeight) {
-            //               this.showWeight = false;
-            //               this.showWh = true;
-            //               this.showStart = false;
-            //           }
-
             switch (this.lithiumIon) {
                 case "true":
                     this.isIon = true
@@ -476,10 +503,24 @@ export default {
 
             }
         },
+        //Also has some rail only stuff that skips the package weight
         handleShowPkgWeight() {
-            this.showPackageWeight = true;
-            this.showWeight = false;
-            this.showWh = false;
+            if (this.transport == "Ocean" && this.isMetal) {
+                this.showReportButton = true;
+            } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "separate") {
+                this.showReportButton = true;
+            } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "contained" && this.battOrCell == "cell") {
+                this.showFourBattRailOnly = true;
+                this.showWeight = false;
+            } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "contained" && this.battOrCell == "battery") {
+                this.showTwoBatt = true;
+                this.showWeight = false;
+            }
+            else {
+                this.showPackageWeight = true;
+                this.showWeight = false;
+                this.showWh = false;
+            }
         },
         handleShowReport() {
             if (this.showReport) {
@@ -508,6 +549,15 @@ export default {
                 }
             } else if (this.cellsInPkg == "button") {
                 this.showReportButton = true;
+            }
+        },
+        handleMoreThanFourRailOnly() {
+            if (this.fourBattRailOnly == "more") {
+                this.showReportButton = true;
+            } else if (this.fourBattRailOnly == "less") {
+                this.showConsignment = true;
+                this.showFourBattRailOnly = false;
+                this.showReportButton = false;
             }
         },
         handleMoreThanNeededToPower() {
@@ -544,14 +594,14 @@ export default {
         },
         handleTwoBatt() {
             if (this.twoBattAnswer == "true") {
-                if (this.transport == "Ocean") {
+                if (this.transport == "Ocean" || this.transport == "Ground") {
                     this.showReportButton = true;
                 } else if (this.transport == "Air") {
                     this.showMoreThanNeeded = true;
                     this.showTwoBatt = false;
                 }
             } else if (this.twoBattAnswer == "false") {
-                if (this.transport == "Ocean") {
+                if (this.transport == "Ocean" || this.transport == "Ground") {
                     this.showConsignment = true;
                     this.showTwoBatt = false;
                 } else if (this.transport == "Air") {
