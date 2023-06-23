@@ -92,6 +92,35 @@
         </div>
         <!--PROMPTS BELOW THE WEIGHTS-->
 
+        <div id="a-set-question" class="selection-block" v-if="showASetQuestion">
+            <h3 class="question-header">How many {{ battOrCell }} does the package include? Note: A "set" of {{ battOrCell
+            }} is the
+                number of individual {{ battOrCell }} that are required to power each piece of equipment.</h3>
+            <select class="dropdown" v-model="cellsInPkg">
+                <option class="drop-option" value="less">The minimum number of {{ battOrCell }} required for the equipment's
+                    operations, plus no more than 2 spare sets.</option>
+                <option class="drop-option" value="more">The minimum number of {{ battOrCell }} required for the equipment's
+                    operations, plus more than 2 spare sets.</option>
+            </select>
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(6)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleASetQuestion()">NEXT</button>
+            </div>
+        </div>
+
+        <div id="two-batt-rail" class="selection-block" v-if="showTwoBattRailOnly">
+            <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
+            <select class="dropdown" v-model="cellsInPkgRailOnly">
+                <option class="drop-option" value="more">Contains more than 4 cells</option>
+                <option class="drop-option" value="less">Contains 4 cells or less</option>
+                <option class="drop-option" value="button">Contains button cells (includes circuit boards)</option>
+            </select>
+            <div class="button-wrapper">
+                <button class="nav-buttons" v-on:click="handleBack(6)">BACK</button><button class="nav-buttons"
+                    v-on:click="handleTwoBattRailOnly()">NEXT</button>
+            </div>
+        </div>
+
         <div id="two-batt" class="selection-block" v-if="showTwoBatt">
             <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
             <select class="dropdown" v-model="twoBattAnswer">
@@ -204,6 +233,9 @@
                 <h2 class="bold-white" v-show="moreThanNeededWarning">Packages containing a combination of lithium batteries
                     contained in and lithium batteries packed with equipment must be marked as "Packed with Equipment" and
                     also meet the requirements of Special Provision A181. Please reproduce this shipment accordingly.</h2>
+                <h2 class="bold-white" v-show="aSetWarning">This package must be repacked accordingly so there are
+                    no more than two spare sets per each piece of equipment contained within the package or must be approved
+                    by the appropriate competent authorities.</h2>
             </warningModal>
         </div>
         <!--REPORT BELOW THIS LINE-->
@@ -291,7 +323,11 @@ export default {
             showTwelveGrams: false,
             twelveGramAnswer: "",
             fiveHundredGramAnswer: "",
-            showMoreThanTwoWithButtonBatt: false,
+            showTwoBattRailOnly: false,
+            cellsInPkgRailOnly: "",
+            showASetQuestion: false,
+            aSetAnswer: "",
+            aSetWarning: false,
 
         }
     },
@@ -340,6 +376,8 @@ export default {
                     this.showBattsInPkg = false;
                     this.showStateOfCharge = false;
                     this.showTwoBatt = false;
+                    this.showTwoBattRailOnly = false;
+                    this.showASetQuestion = false;
                     this.showPackageWeight = true;
                     break;
                 case 7:
@@ -457,6 +495,7 @@ export default {
             this.socWarning = false;
             this.moreThanTwoWarning = false;
             this.moreThanNeededWarning = false;
+            this.aSetWarning = false;
             if (this.moreThanNeeded == "true") {
                 this.moreThanNeededWarning = true;
                 this.isOpen = true;
@@ -505,6 +544,7 @@ export default {
             this.socWarning = false;
             this.moreThanTwoWarning = false;
             this.moreThanNeededWarning = false;
+            this.aSetWarning = false;
             if (this.battsInPkg == "false") {
                 this.moreThanTwoWarning = true;
                 this.isOpen = true;
@@ -516,6 +556,7 @@ export default {
             this.socWarning = false;
             this.moreThanTwoWarning = false;
             this.moreThanNeededWarning = false;
+            this.aSetWarning = false;
             //Air only max 30% charge 
             if (this.stateOfCharge > 30) {
                 this.isOpen = true;
@@ -542,8 +583,8 @@ export default {
                 this.showPackageWeight = false;
             } else if (this.howPacked == "contained" && this.battOrCell == "battery" && this.isIon) {
                 if (this.transport == "Ground") {
-                    this.showMoreThanTwoWithButtonBatt = true;
-                    this.this.showPackageWeight = false;
+                    this.showTwoBattRailOnly = true;
+                    this.showPackageWeight = false;
                 } else {
                     this.showTwoBatt = true;
                     this.showPackageWeight = false;
@@ -556,6 +597,28 @@ export default {
                 this.showReportButton = true;
             }
         },
+        handleTwoBattRailOnly() {
+            if (this.cellsInPkgRailOnly == "more") {
+                this.showReportButton = true;
+            } else if (this.cellsInPkgRailOnly == "less") {
+                this.showConsignment = true;
+                this.showTwoBattRailOnly = false;
+            } else if (this.cellsInPkgRailOnly == "button") {
+                this.showReportButton = true;
+            }
+        },
+        handleASetQuestion() {
+            this.socWarning = false;
+            this.moreThanTwoWarning = false;
+            this.moreThanNeededWarning = false;
+            this.aSetWarning = false;
+            if (this.aSetAnswer == "less") {
+                this.showReportButton = true;
+            } else if (this.aSetAnswer == "more") {
+                this.isOpen = true;
+                this.aSetWarning = true;
+            }
+        }
     },
     computed: {
         showIonOrMetal() {
