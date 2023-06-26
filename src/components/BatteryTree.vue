@@ -505,7 +505,7 @@ export default {
         },
         //Also has some rail only stuff that skips the package weight
         handleShowPkgWeight() {
-            if (this.transport == "Ocean" && this.isMetal) {
+            if (this.transport == "Ocean" && this.maritimeLimiter) {
                 this.showReportButton = true;
             } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "separate") {
                 this.showReportButton = true;
@@ -722,16 +722,20 @@ export default {
             }
         },
 
-        //THIS SECTION FOR AIR TRANSPORT ONLY CHANGE FPR OTHER MODES OF TRANSPORT
-        //FIX THIS AFTER ADDING MORE INFO
-        //showRegulated() {
-        //    if (this.isMetal == true) {
-        //        if (1 == true) {
-        //            return "y";
-        //        }
-        //    }
-        //    return "x";
-        //},
+        maritimeLimiter() {
+            if(this.battOrCell == "cell" && this.isIon && this.wattHour > 20){
+                return true;
+            }else if(this.battOrCell == "battery" && this.isIon && this.wattHour > 100){
+                return true;
+            }else if(this.battOrCell == "cell" && this.isMetal && this.weightOfLi > 1){
+                return true;
+            }else if(this.battOrCell == "battery" && this.isMetal && this.weightOfLi > 2){
+                return true;
+            }
+            return false;
+            
+        },
+
         showHowPackaged() {
             if (this.containedIn == true) {
                 return "Contained In";
