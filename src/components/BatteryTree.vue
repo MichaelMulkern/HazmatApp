@@ -377,8 +377,13 @@ export default {
                     this.showUsa = false
                     break;
                 case 3:
-                    this.showUsa = true
-                    this.showBattOrCell = false
+                    if (this.transport == "Ground") {
+                        this.showBattOrCell = false
+                        this.showHowPacked = true;
+                    } else {
+                        this.showUsa = true
+                        this.showBattOrCell = false
+                    }
                     break;
                 case 4:
                     this.showWh = false
@@ -400,7 +405,6 @@ export default {
                     break;
                 case 6:
                     if (this.transport == "Ground" && this.howPacked == "contained") {
-                        this.showWeight = true;
                         this.showMoreThanFour = false;
                         this.showReportButton = false;
                         this.showBattsInPkg = false;
@@ -409,6 +413,8 @@ export default {
                         this.showTwoBattRailOnly = false;
                         this.showASetQuestion = false;
                         this.showGramsQuestion = false;
+                        this.showWeight = true;
+                        this.showWh = true;
                     } else {
                         this.showMoreThanFour = false;
                         this.showReportButton = false;
@@ -506,6 +512,8 @@ export default {
         //Also has some rail only stuff that skips the package weight
         handleShowPkgWeight() {
             if (this.transport == "Ocean" && this.maritimeLimiter) {
+                this.showReportButton = true;
+            } else if (this.transport == "Ground" && this.groundLimiter) {
                 this.showReportButton = true;
             } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "separate") {
                 this.showReportButton = true;
@@ -723,17 +731,54 @@ export default {
         },
 
         maritimeLimiter() {
-            if(this.battOrCell == "cell" && this.isIon && this.wattHour > 20){
+            if (this.battOrCell == "cell" && this.isIon && this.wattHour > 20) {
                 return true;
-            }else if(this.battOrCell == "battery" && this.isIon && this.wattHour > 100){
+            } else if (this.battOrCell == "battery" && this.isIon && this.wattHour > 100) {
                 return true;
-            }else if(this.battOrCell == "cell" && this.isMetal && this.weightOfLi > 1){
+            } else if (this.battOrCell == "cell" && this.isMetal && this.weightOfLi > 1) {
                 return true;
-            }else if(this.battOrCell == "battery" && this.isMetal && this.weightOfLi > 2){
+            } else if (this.battOrCell == "battery" && this.isMetal && this.weightOfLi > 2) {
                 return true;
             }
             return false;
-            
+        },
+        groundLimiter() {
+            //Cells
+            if (this.battOrCell == "cell" && this.isIon && this.wattHour > 20) {
+                if (this.wattHour <= 60) {
+                    //Need something here for report <=60 wh
+                    return true;
+                } else {
+                    //Report >60 wh
+                    return true;
+                }
+            } else if (this.battOrCell == "cell" && this.isMetal && this.weightOfLi > 1) {
+                if (this.weightOfLi <= 5) {
+                    //Less than 6g report
+                    return true;
+                } else {
+                    //Greater than 6g report
+                    return true;
+                }
+                //Batteries
+            } else if (this.battOrCell == "battery" && this.isIon && this.wattHour > 100) {
+                if (this.wattHour <= 300) {
+                    //Report break
+                    return true;
+                } else {
+                    //Report break > 300 grams
+                    return true;
+                }
+            } else if (this.battOrCell == "battery" && this.isMetal && this.weightOfLi > 2) {
+                if (this.weightOfLi <= 25) {
+                    //Report break
+                    return true;
+                } else {
+                    //Report break >25 grams of lithium content
+                    return true;
+                }
+            }
+            return false;
         },
 
         showHowPackaged() {
