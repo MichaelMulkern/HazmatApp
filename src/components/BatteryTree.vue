@@ -260,6 +260,12 @@
                 <h2 class="bold-white" v-show="gramsWarning">The international air regulations limit the quantity of lithium
                     metal in any piece of equipment to a maximum of 12 g per cell and 500 g per battery. This package must
                     be repacked accordingly or must be approved by the appropriate competent authorities.</h2>
+                <h2 class="bold-white" v-show="thirtyFiveKiloWarning">This package must be repacked accordingly so the net
+                    quantity does not exceed 35 kg; or, per Special Provision A99, a lithium cell or battery meeting the
+                    requirements of Section I of the applicable packing instruction may have a mass exceeding 35 kg with the
+                    approval of the appropriate authority of the State of Origin and the State of the operator and the
+                    requirements in Packing Instruction 974 of the ICAO Supplement to the Technical Instructions are met.
+                </h2>
             </warningModal>
         </div>
         <!--REPORT BELOW THIS LINE-->
@@ -354,6 +360,7 @@ export default {
             gramsWarning: false,
             fourBattRailOnly: "",
             showFourBattRailOnly: false,
+            thirtyFiveKiloWarning: false,
 
         }
     },
@@ -574,6 +581,7 @@ export default {
             this.moreThanNeededWarning = false;
             this.aSetWarning = false;
             this.gramsWarning = false;
+            this.thirtyFiveKiloWarning = false;
             if (this.moreThanNeeded == "true") {
                 this.moreThanNeededWarning = true;
                 this.isOpen = true;
@@ -624,6 +632,7 @@ export default {
             this.moreThanNeededWarning = false;
             this.aSetWarning = false;
             this.gramsWarning = false;
+            this.thirtyFiveKiloWarning = false;
             if (this.battsInPkg == "false") {
                 this.moreThanTwoWarning = true;
                 this.isOpen = true;
@@ -637,6 +646,7 @@ export default {
             this.moreThanNeededWarning = false;
             this.aSetWarning = false;
             this.gramsWarning = false;
+            this.thirtyFiveKiloWarning = false;
             //Air only max 30% charge 
             if (this.stateOfCharge > 30) {
                 this.isOpen = true;
@@ -651,13 +661,22 @@ export default {
             }
         },
         handlePackageJunction() {
+            this.socWarning = false;
+            this.moreThanTwoWarning = false;
+            this.moreThanNeededWarning = false;
+            this.aSetWarning = false;
+            this.gramsWarning = false;
+            this.thirtyFiveKiloWarning = false;
             if (this.transport == "Air" && this.isIon && this.howPacked == "loose") {
                 this.showStateOfCharge = true;
                 this.showPackageWeight = false;
             } else if (this.transport == "Air" && this.howPacked == "separate") {
                 this.showBattsInPkg = true;
                 this.showPackageWeight = false;
-            } else if (this.howPacked == "contained" && this.battOrCell == "cell" && this.isIon) {
+            } else if (this.transport == "Air" && this.packageWeight > 35){
+                this.thirtyFiveKiloWarning = true;
+                this.isOpen = true;
+            }else if (this.howPacked == "contained" && this.battOrCell == "cell" && this.isIon) {
                 //Transport doesn't matter
                 this.showMoreThanFour = true;
                 this.showPackageWeight = false;
@@ -697,6 +716,7 @@ export default {
             this.moreThanNeededWarning = false;
             this.aSetWarning = false;
             this.gramsWarning = false;
+            this.thirtyFiveKiloWarning = false;
             if (this.aSetAnswer == "less") {
                 this.showReportButton = true;
             } else if (this.aSetAnswer == "more") {
@@ -710,6 +730,7 @@ export default {
             this.moreThanNeededWarning = false;
             this.aSetWarning = false;
             this.gramsWarning = false;
+            this.thirtyFiveKiloWarning = false;
             if (this.gramsAnswer == "true") {
                 this.isOpen = true;
                 this.gramsWarning = true;
@@ -865,5 +886,4 @@ export default {
 
 .nav-buttons:hover {
     background-image: linear-gradient(-180deg, #1D95C9 0%, #17759C 100%);
-}
-</style>
+}</style>
