@@ -271,32 +271,41 @@
         <!--REPORT BELOW THIS LINE-->
         <button id="show-report" v-if="showReportButton" v-on:click="handleShowReport()">{{ reportButton }}</button>
 
-        <div id="report-preview" v-if="showReport">
-            <hr>
-            <h2>Report Preview</h2>
-            <button>CREATE PDF (NON FUNCTIONAL)</button>
-            <div id="top-header">
-                <h3 class="top-boxes">{{ showIonOrMetal }}</h3>
-                <h3 class="top-boxes">Regulated info</h3>
-                <h3 class="top-boxes">UN Reference</h3>
-                <h3 class="top-boxes">{{ showHowPackaged }}</h3>
+        <div>
+            <reportModal :open="openReport" @close="openReport = !openReport" id="report-box">
+                <h2>Report Preview</h2>
+                <button class="show-report">CREATE PDF (NON FUNCTIONAL)</button>
+                <div id="report-preview">
 
-            </div>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum.</p>
+                    <div id="top-header">
+                        <h3 class="top-boxes">{{ showIonOrMetal }}</h3>
+                        <h3 class="top-boxes">Regulated info</h3>
+                        <h3 class="top-boxes">UN Reference</h3>
+                        <h3 class="top-boxes">{{ showHowPackaged }}</h3>
+
+                    </div>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                        et
+                        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                        aliquip
+                        ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+                        dolore eu
+                        fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+                        deserunt mollit anim id est laborum.</p>
+                </div>
+            </reportModal>
         </div>
+
     </div>
 </template>
 
 <script>
 import warningModal from "@/components/WarningModal.vue";
+import reportModal from "@/components/ReportModal.vue";
 import { ref } from "vue";
 export default {
     name: "BatteryTree",
-    components: { warningModal },
+    components: { warningModal, reportModal },
     setup() {
         const isOpen = ref(false)
         return { isOpen }
@@ -361,6 +370,7 @@ export default {
             fourBattRailOnly: "",
             showFourBattRailOnly: false,
             thirtyFiveKiloWarning: false,
+            openReport: false,
 
         }
     },
@@ -538,13 +548,14 @@ export default {
             }
         },
         handleShowReport() {
-            if (this.showReport) {
-                this.reportButton = "Show Report Preview"
-                this.showReport = false;
-            } else {
-                this.reportButton = "Hide Report Preview"
-                this.showReport = true;
-            }
+            this.openReport = true;
+            // if (this.showReport) {
+            //     this.reportButton = "Show Report Preview"
+            //     this.openReport = false;
+            // } else {
+            //     this.reportButton = "Hide Report Preview"
+            //     this.showReport = true;
+            // }
         },
         handleMoreThanFourCells() {
             if (this.cellsInPkg == "more") {
@@ -667,16 +678,16 @@ export default {
             this.aSetWarning = false;
             this.gramsWarning = false;
             this.thirtyFiveKiloWarning = false;
-            if (this.transport == "Air" && this.isIon && this.howPacked == "loose") {
+            if (this.transport == "Air" && this.packageWeight > 35) {
+                this.thirtyFiveKiloWarning = true;
+                this.isOpen = true;
+            } else if (this.transport == "Air" && this.isIon && this.howPacked == "loose") {
                 this.showStateOfCharge = true;
                 this.showPackageWeight = false;
             } else if (this.transport == "Air" && this.howPacked == "separate") {
                 this.showBattsInPkg = true;
                 this.showPackageWeight = false;
-            } else if (this.transport == "Air" && this.packageWeight > 35){
-                this.thirtyFiveKiloWarning = true;
-                this.isOpen = true;
-            }else if (this.howPacked == "contained" && this.battOrCell == "cell" && this.isIon) {
+            } else if (this.howPacked == "contained" && this.battOrCell == "cell" && this.isIon) {
                 //Transport doesn't matter
                 this.showMoreThanFour = true;
                 this.showPackageWeight = false;
@@ -824,19 +835,18 @@ export default {
 }
 
 #top-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+    margin-top: 15px;
 
 }
 
 .top-boxes {
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    display: inline;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 3px;
+    padding-bottom: 3px;
     border: 2px solid black;
-    font-size: 30px;
+    font-size: 25px;
 }
 
 #show-report {
@@ -886,4 +896,11 @@ export default {
 
 .nav-buttons:hover {
     background-image: linear-gradient(-180deg, #1D95C9 0%, #17759C 100%);
-}</style>
+}
+
+#report-preview {
+    width: 8.5in;
+    height: 11in;
+    border: black 2px solid;
+}
+</style>
