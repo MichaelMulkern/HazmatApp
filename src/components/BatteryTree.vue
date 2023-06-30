@@ -1,6 +1,7 @@
 <template>
     <div id="main-area">
         <h2 v-if="showStart">Transporting Lithium Batteries by {{ transport }}</h2>
+        
         <div id="transport-mode" class="selection-block" v-if="showTransport">
             <span>Select mode of transport: </span>
             <select name="transport-list" class="dropdown" v-model="transport">
@@ -269,30 +270,10 @@
             </warningModal>
         </div>
         <!--REPORT BELOW THIS LINE-->
-        <button id="show-report" v-if="showReportButton" v-on:click="handleShowReport()">{{ reportButton }}</button>
-
+        <a id="show-report" class="report-button" v-if="showReportButton" v-on:click="handleShowReport()" v-bind:href="linkTest" target="_blank">Show Report</a>
         <div>
             <reportModal :open="openReport" @close="openReport = !openReport" id="report-box">
-                <h2>Report Preview</h2>
-                <button class="show-report">CREATE PDF (NON FUNCTIONAL)</button>
-                <div id="report-preview">
-
-                    <div id="top-header">
-                        <h3 class="top-boxes">{{ showIonOrMetal }}</h3>
-                        <h3 class="top-boxes">Regulated info</h3>
-                        <h3 class="top-boxes">UN Reference</h3>
-                        <h3 class="top-boxes">{{ showHowPackaged }}</h3>
-
-                    </div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                        et
-                        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                        aliquip
-                        ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                        dolore eu
-                        fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                        deserunt mollit anim id est laborum.</p>
-                </div>
+                
             </reportModal>
         </div>
 
@@ -371,6 +352,7 @@ export default {
             showFourBattRailOnly: false,
             thirtyFiveKiloWarning: false,
             openReport: false,
+            linkTest: "/files/IonAir/IATA.US.PI965.IA.pdf",
 
         }
     },
@@ -548,7 +530,9 @@ export default {
             }
         },
         handleShowReport() {
-            this.openReport = true;
+            //this.reportPicker();
+            
+            //this.openReport = true;
             // if (this.showReport) {
             //     this.reportButton = "Show Report Preview"
             //     this.openReport = false;
@@ -749,6 +733,9 @@ export default {
                 this.showMoreThanNeeded = true;
                 this.showGramsQuestion = false;
             }
+        },
+        reportPicker() {
+
         }
     },
     computed: {
@@ -902,5 +889,43 @@ export default {
     width: 8.5in;
     height: 11in;
     border: black 2px solid;
+}
+
+
+.report-button {
+    margin-top:10px;
+  background: #FF4742;
+  border: 1px solid #FF4742;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: nunito,roboto,proxima-nova,"proxima nova",sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 16px;
+  min-height: 40px;
+  outline: 0;
+  padding: 12px 14px;
+  text-align: center;
+  text-rendering: geometricprecision;
+  text-transform: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+}
+
+.report-button:hover,
+.report-button:active {
+  background-color: initial;
+  background-position: 0 0;
+  color: #FF4742;
+}
+
+.report-button:active {
+  opacity: .5;
 }
 </style>

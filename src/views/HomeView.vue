@@ -11,6 +11,7 @@
     <battery-tree />
     <slide-menu />
 
+   
   </div>
 </template>
 
