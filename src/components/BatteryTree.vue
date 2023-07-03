@@ -1,7 +1,7 @@
 <template>
     <div id="main-area">
         <h2 v-if="showStart">Transporting Lithium Batteries by {{ transport }}</h2>
-        
+
         <div id="transport-mode" class="selection-block" v-if="showTransport">
             <span>Select mode of transport: </span>
             <select name="transport-list" class="dropdown" v-model="transport">
@@ -124,9 +124,9 @@
         <div id="two-batt-rail" class="selection-block" v-if="showTwoBattRailOnly">
             <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
             <select class="dropdown" v-model="cellsInPkgRailOnly">
-                <option class="drop-option" value="more">Contains more than 4 cells</option>
-                <option class="drop-option" value="less">Contains 4 cells or less</option>
-                <option class="drop-option" value="button">Contains button cells (includes circuit boards)</option>
+                <option class="drop-option" value="more">Contains more than 2 batteries</option>
+                <option class="drop-option" value="less">Contains 2 batteries or less</option>
+                <option class="drop-option" value="button">Contains button cell batteries (includes circuit boards)</option>
             </select>
             <div class="button-wrapper">
                 <button class="nav-buttons" v-on:click="handleBack(6)">BACK</button><button class="nav-buttons"
@@ -161,9 +161,9 @@
         <div id="section-two-consignment" class="selection-block" v-if="showSectionTwoConsignment">
             <h3>How many of these packages are contained within your consignment?</h3>
             <select class="dropdown" v-model="sectionTwoConsignment">
-                <option class="drop-option" value="true">Consignment contains no more than two such Section II packages
+                <option class="drop-option" value="false">Consignment contains no more than two such Section II packages
                 </option>
-                <option class="drop-option" value="false">Consignment contains more than two such Section II packages
+                <option class="drop-option" value="true">Consignment contains more than two such Section II packages
                 </option>
             </select>
             <div class="button-wrapper">
@@ -270,10 +270,12 @@
             </warningModal>
         </div>
         <!--REPORT BELOW THIS LINE-->
-        <a id="show-report" class="report-button" v-if="showReportButton" v-on:click="handleShowReport()" v-bind:href="linkTest" target="_blank">Show Report</a>
+
         <div>
             <reportModal :open="openReport" @close="openReport = !openReport" id="report-box">
-                
+                <h3>REPORT IS READY TO VIEW</h3>
+                <a id="show-report" class="report-button" v-if="showReportButton" v-on:click="handleShowReport()"
+                    v-bind:href="reportLink" target="_blank">OPEN PDF</a>
             </reportModal>
         </div>
 
@@ -332,7 +334,7 @@ export default {
             showSectionTwoConsignment: false,
             sectionTwoConsignment: "",
             showBelowWeightOptions: true,
-            showReportButton: false,
+            showReportButton: true,
             previousMenu: "",
             showTransport: true,
             socWarning: false,
@@ -352,7 +354,7 @@ export default {
             showFourBattRailOnly: false,
             thirtyFiveKiloWarning: false,
             openReport: false,
-            linkTest: "/files/IonAir/IATA.US.PI965.IA.pdf",
+            reportLink: "",
 
         }
     },
@@ -387,25 +389,21 @@ export default {
                 case 4:
                     this.showWh = false
                     this.showWeight = false
-                    this.showReportButton = false
                     this.showBattOrCell = true
                     break;
                 case 5:
                     if (this.isIon) {
                         this.showWh = true;
                         this.showPackageWeight = false;
-                        this.showReportButton = false;
                     } else if (this.isMetal) {
                         this.showWeight = true;
                         this.showPackageWeight = false;
-                        this.showReportButton = false;
                         this.showFourBattRailOnly = false;
                     }
                     break;
                 case 6:
                     if (this.transport == "Ground" && this.howPacked == "contained") {
                         this.showMoreThanFour = false;
-                        this.showReportButton = false;
                         this.showBattsInPkg = false;
                         this.showStateOfCharge = false;
                         this.showTwoBatt = false;
@@ -416,7 +414,6 @@ export default {
                         this.showWh = true;
                     } else {
                         this.showMoreThanFour = false;
-                        this.showReportButton = false;
                         this.showBattsInPkg = false;
                         this.showStateOfCharge = false;
                         this.showTwoBatt = false;
@@ -427,7 +424,6 @@ export default {
                     }
                     break;
                 case 7:
-                    this.showReportButton = false;
                     this.showMoreThanNeeded = false;
                     this.showGramsQuestion = false;
                     if (this.battOrCell == "battery" && this.isIon) {
@@ -439,12 +435,10 @@ export default {
                     }
                     break;
                 case 8:
-                    this.showReportButton = false;
                     this.showSectionTwoConsignment = false;
                     this.showMoreThanNeeded = true;
                     break;
                 case 9:
-                    this.showReportButton = false;
                     if (this.isIon) {
                         if (this.battOrCell == "battery") {
                             this.showTwoBatt = true;
@@ -511,11 +505,11 @@ export default {
         //Also has some rail only stuff that skips the package weight
         handleShowPkgWeight() {
             if (this.transport == "Ocean" && this.maritimeLimiter) {
-                this.showReportButton = true;
+                this.openReport = true;
             } else if (this.transport == "Ground" && this.groundLimiter) {
-                this.showReportButton = true;
+                this.openReport = true;
             } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "separate") {
-                this.showReportButton = true;
+                this.openReport = true;
             } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "contained" && this.battOrCell == "cell") {
                 this.showFourBattRailOnly = true;
                 this.showWeight = false;
@@ -530,21 +524,41 @@ export default {
             }
         },
         handleShowReport() {
-            //this.reportPicker();
-            
-            //this.openReport = true;
-            // if (this.showReport) {
-            //     this.reportButton = "Show Report Preview"
-            //     this.openReport = false;
-            // } else {
-            //     this.reportButton = "Hide Report Preview"
-            //     this.showReport = true;
-            // }
+            if(this.transport == "Air" && this.isIon){
+                //Loose batteries
+                if(((this.wattHour > 20 && this.battOrCell == "cell") || (this.wattHour > 100 && this.battOrCell == "battery")) && this.packageWeight <= 35 && this.howPacked == "loose"){
+                    this.reportLink = "/files/IonAir/IATA.US.PI965.IA.pdf";
+                }else if(((this.wattHour <= 20 && this.battOrCell == "cell") || (this.wattHour <= 100 && this.battOrCell == "battery")) && this.howPacked == "loose"){
+                    if(this.packageWeight > 10){
+                        this.reportLink = "/files/IonAir/IATA.US.PI965.Net%20Qty_IA.pdf";
+                    }else{
+                    this.reportLink = "/files/IonAir/IATA.US.PI965.IB.pdf";
+                    }
+                //Packed With
+                }else if(((this.wattHour <= 20 && this.battOrCell == "cell") || (this.wattHour <= 100 && this.battOrCell == "battery")) && this.howPacked == "separate"){
+                    this.reportLink = this.packageWeight > 5 ? "/files/IonAir/IATA.US.PI966.Net%20Qty_I.CAO.pdf" : "/files/IonAir/IATA.US.PI966.II.pdf";
+                }else if(((this.wattHour > 20 && this.battOrCell == "cell") || (this.wattHour > 100 && this.battOrCell == "battery")) && this.howPacked == "separate"){
+                    this.reportLink = this.packageWeight > 5 ? "/files/IonAir/IATA.US.PI966.I.CAO.pdf" : "/files/IonAir/IATA.US.PI966.I.PAX.pdf";
+                //Contained In
+                }else if(((this.wattHour > 20 && this.battOrCell == "cell") || (this.wattHour > 100 && this.battOrCell == "battery")) && this.howPacked == "contained"){
+                    this.reportLink = this.packageWeight > 5 ? "/files/IonAir/IATA.US.PI967.I.CAO.pdf" : "/files/IonAir/IATA.US.PI967.I.PAX.pdf";
+                }else if(((this.wattHour <= 20 && this.battOrCell == "cell") || (this.wattHour <= 100 && this.battOrCell == "battery")) && this.howPacked == "contained"){
+                    if(this.wattHour > 5){
+                        this.reportLink = "/files/IonAir/IATA.US.PI967.Net%20Qty_I.CAO.pdf";
+                    }else if (this.twoBattAnswer == "true" || this.cellsInPkg == "more"){
+                        this.reportLink = "/files/IonAir/IATA.US.PI967.II.More%204cell_2bat.pdf";
+                    }else if (this.twoBattAnswer == "false" || this.cellsInPkg == "less"){
+                        this.reportLink = this.sectionTwoConsignment == "true" ? "/files/IonAir/IATA.US.PI967.II.More%202%20Pkg.pdf" : "/files/IonAir/IATA.US.PI967.II.2%20Pkg.pdf";
+                    }else if (this.cellsInPkg == "button"){
+                        this.reportLink = "/files/IonAir/IATA.US.PI967.II.BCell.pdf"; //Why international only?? 
+                    }
+                }
+            }
         },
         handleMoreThanFourCells() {
             if (this.cellsInPkg == "more") {
                 if (this.transport == "Ocean" || this.transport == "Ground") {
-                    this.showReportButton = true;
+                    this.openReport = true;
                 } else if (this.transport == "Air") {
                     this.showMoreThanNeeded = true;
                     this.showMoreThanFour = false;
@@ -558,16 +572,15 @@ export default {
                     this.showMoreThanFour = false;
                 }
             } else if (this.cellsInPkg == "button") {
-                this.showReportButton = true;
+                this.openReport = true;
             }
         },
         handleMoreThanFourRailOnly() {
             if (this.fourBattRailOnly == "more") {
-                this.showReportButton = true;
+                this.openReport = true;
             } else if (this.fourBattRailOnly == "less") {
                 this.showConsignment = true;
                 this.showFourBattRailOnly = false;
-                this.showReportButton = false;
             }
         },
         handleMoreThanNeededToPower() {
@@ -582,16 +595,16 @@ export default {
                 this.isOpen = true;
             } else if (this.moreThanNeeded == "false") {
                 if (this.isIon && this.battOrCell == "cell" && this.transport == "Air") {
-                    if (this.cellsInPkg == "more") {
-                        this.showReportButton = true;
+                    if (this.cellsInPkg == "more" && this.wattHour <= 20) {
+                        this.openReport = true;
                     } else if (this.cellsInPkg == "less") {
                         this.showSectionTwoConsignment = true;
                         this.showMoreThanNeeded = false;
-                    }
+                    } else { this.openReport = true; }
                 } else if (this.isMetal && this.transport == "Air") {
-                    this.showReportButton = true;
+                    this.openReport = true;
                 } else if (this.isIon && this.twoBattAnswer == "true" && this.transport == "Air") {
-                    this.showReportButton = true;
+                    this.openReport = true;
                 } else if (this.isIon && this.twoBattAnswer == "false" && this.transport == "Air") {
                     this.showSectionTwoConsignment = true;
                     this.showMoreThanNeeded = false;
@@ -600,13 +613,13 @@ export default {
         },
         handleNumberContainedInConsignment() {
             if (this.amountInConsignment == "true" || this.amountInConsignment == "false") {
-                this.showReportButton = true;
+                this.openReport = true;
             }
         },
         handleTwoBatt() {
             if (this.twoBattAnswer == "true") {
                 if (this.transport == "Ocean" || this.transport == "Ground") {
-                    this.showReportButton = true;
+                    this.openReport = true;
                 } else if (this.transport == "Air") {
                     this.showMoreThanNeeded = true;
                     this.showTwoBatt = false;
@@ -632,7 +645,7 @@ export default {
                 this.moreThanTwoWarning = true;
                 this.isOpen = true;
             } else {
-                this.showReportButton = true;
+                this.openReport = true;
             }
         },
         handleStateOfCharge() {
@@ -647,12 +660,12 @@ export default {
                 this.isOpen = true;
                 this.socWarning = true;
             } else {
-                this.showReportButton = true;
+                this.openReport = true;
             }
         },
         handleSectionTwoPackages() {
             if (this.sectionTwoConsignment == "true" || this.sectionTwoConsignment == "false") {
-                this.showReportButton = true;
+                this.openReport = true;
             }
         },
         handlePackageJunction() {
@@ -671,7 +684,7 @@ export default {
             } else if (this.transport == "Air" && this.howPacked == "separate") {
                 this.showBattsInPkg = true;
                 this.showPackageWeight = false;
-            } else if (this.howPacked == "contained" && this.battOrCell == "cell" && this.isIon) {
+            } else if (this.howPacked == "contained" && this.battOrCell == "cell" && this.isIon && this.wattHour <= 20) {
                 //Transport doesn't matter
                 this.showMoreThanFour = true;
                 this.showPackageWeight = false;
@@ -679,7 +692,7 @@ export default {
                 if (this.transport == "Ground") {
                     this.showTwoBattRailOnly = true;
                     this.showPackageWeight = false;
-                } else {
+                } else if (this.wattHour <= 100) {
                     this.showTwoBatt = true;
                     this.showPackageWeight = false;
                 }
@@ -691,18 +704,21 @@ export default {
                 }
                 this.showGramsQuestion = true;
                 this.showPackageWeight = false;
+            } else if (((this.wattHour > 20 && this.battOrCell == "cell") || (this.wattHour > 100 && this.battOrCell == "battery"))){
+                this.showPackageWeight = false;
+                this.showMoreThanNeeded = true;
             } else {
-                this.showReportButton = true;
+                this.openReport = true;
             }
         },
         handleTwoBattRailOnly() {
             if (this.cellsInPkgRailOnly == "more") {
-                this.showReportButton = true;
+                this.openReport = true;
             } else if (this.cellsInPkgRailOnly == "less") {
                 this.showConsignment = true;
                 this.showTwoBattRailOnly = false;
             } else if (this.cellsInPkgRailOnly == "button") {
-                this.showReportButton = true;
+                this.openReport = true;
             }
         },
         handleASetQuestion() {
@@ -713,7 +729,7 @@ export default {
             this.gramsWarning = false;
             this.thirtyFiveKiloWarning = false;
             if (this.aSetAnswer == "less") {
-                this.showReportButton = true;
+                this.openReport = true;
             } else if (this.aSetAnswer == "more") {
                 this.isOpen = true;
                 this.aSetWarning = true;
@@ -735,7 +751,7 @@ export default {
             }
         },
         reportPicker() {
-
+            this.reportLink = "/files/IonAir/IATA.US.PI965.IA.pdf";
         }
     },
     computed: {
@@ -826,16 +842,6 @@ export default {
 
 }
 
-.top-boxes {
-    display: inline;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    border: 2px solid black;
-    font-size: 25px;
-}
-
 #show-report {
     margin: 10px;
 }
@@ -886,46 +892,45 @@ export default {
 }
 
 #report-preview {
-    width: 8.5in;
-    height: 11in;
+    width: auto;
+    height: auto;
     border: black 2px solid;
 }
 
 
 .report-button {
-    margin-top:10px;
-  background: #FF4742;
-  border: 1px solid #FF4742;
-  border-radius: 6px;
-  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
-  box-sizing: border-box;
-  color: #FFFFFF;
-  cursor: pointer;
-  display: inline-block;
-  font-family: nunito,roboto,proxima-nova,"proxima nova",sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 16px;
-  min-height: 40px;
-  outline: 0;
-  padding: 12px 14px;
-  text-align: center;
-  text-rendering: geometricprecision;
-  text-transform: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
+    background: #FF4742;
+    border: 1px solid #FF4742;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-block;
+    font-family: nunito, roboto, proxima-nova, "proxima nova", sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 16px;
+    min-height: 40px;
+    outline: 0;
+    padding: 12px 14px;
+    text-align: center;
+    text-rendering: geometricprecision;
+    text-transform: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: middle;
 }
 
 .report-button:hover,
 .report-button:active {
-  background-color: initial;
-  background-position: 0 0;
-  color: #FF4742;
+    background-color: initial;
+    background-position: 0 0;
+    color: #FF4742;
 }
 
 .report-button:active {
-  opacity: .5;
+    opacity: .5;
 }
 </style>
