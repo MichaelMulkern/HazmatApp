@@ -395,6 +395,7 @@ export default {
                     if (this.isIon) {
                         this.showWh = true;
                         this.showPackageWeight = false;
+                        
                     } else if (this.isMetal) {
                         this.showWeight = true;
                         this.showPackageWeight = false;
@@ -410,8 +411,8 @@ export default {
                         this.showTwoBattRailOnly = false;
                         this.showASetQuestion = false;
                         this.showGramsQuestion = false;
-                        this.showWeight = true;
-                        this.showWh = true;
+                        this.showPackageWeight = true;
+                        //this.showWh = true; Wy was this here??
                     } else {
                         this.showMoreThanFour = false;
                         this.showBattsInPkg = false;
@@ -456,6 +457,7 @@ export default {
                             this.showConsignment = false;
                         }
                     }
+                break;
             }
 
         },
@@ -508,7 +510,10 @@ export default {
                 this.openReport = true;
             } else if (this.transport == "Ground" && this.groundLimiter && this.howPacked == "contained") {
                 this.openReport = true;
-            } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "separate") {
+            } else if (this.transport == "Ground" && ((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100)) && this.howPacked == "contained") {
+                this.showFourBattRailOnly = true;
+                this.showWh = false;
+            } else if (this.transport == "Ground" && this.groundLimiter && this.howPacked == "separate") {
                 this.openReport = true;
             } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "contained" && this.battOrCell == "cell") {
                 this.showFourBattRailOnly = true;
@@ -524,7 +529,8 @@ export default {
             }
         },
         handleShowReport() {
-            this.reportLink = "";
+            this.reportLink = "#";
+            //AIR REPORTS
             if(this.transport == "Air" && this.isIon){
                 //Loose batteries
                 if(((this.wattHour > 20 && this.battOrCell == "cell") || (this.wattHour > 100 && this.battOrCell == "battery")) && this.packageWeight <= 35 && this.howPacked == "loose"){
@@ -579,14 +585,40 @@ export default {
                 }else if(this.cellsInPkg == "button"){
                     this.reportLink = "/files/MetalAir/IATA.US.PI970.II.BCell.pdf";
                 }
+            //GROUND REPORTS
             }else if(this.transport == "Ground" && this.isIon){
-                //Stand Alone
+                //Stand Alone ION
                 if(((this.battOrCell == "cell" && this.wattHour > 60) || (this.battOrCell == "battery" && this.wattHour > 300)) && this.howPacked == "loose"){
                     this.reportLink = "/files/IonGround/49CFR.3480.C9.Large.pdf";
                 }else if(((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100)) && this.howPacked == "loose"){
                     this.reportLink = this.packageWeight > 30 ? "/files/IonGround/49CFR.3480.C9.Med.pdf" : "/files/IonGround/49CFR.3480.Ex.Med.pdf";
                 }else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.howPacked == "loose"){
                     this.reportLink = this.packageWeight > 30 ? "/files/IonGround/49CFR.3480.C9.Small.pdf" : "/files/IonGround/49CFR.3480.Ex.Small.pdf";
+                //Contained in ION
+                } else if(((this.battOrCell == "cell" && this.wattHour > 60) || (this.battOrCell == "battery" && this.wattHour > 300)) && this.howPacked == "contained"){
+                    this.reportLink = "/files/IonGround/49CFR.3481.Cont.Large.pdf";
+                } else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.packageWeight <= 5 && this.howPacked == "contained"){
+                    if(this.cellsInPkgRailOnly == "button" || this.cellsInPkg == "button"){
+                        this.reportLink = "/files/IonGround/49CFR.3481.Cont.Ex.BC.pdf";
+                    }else if (this.cellsInPkg == "more" || this.cellsInPkgRailOnly == "more"){
+                        this.reportLink = "/files/IonGround/49CFR.3481.Cont.Ex.Small.more4cell_2bat.pdf";
+                    }else if (this.cellsInPkg == "less" || this.cellsInPkgRailOnly == "less"){
+                        this.reportLink = this.amountInConsignment == "true" ? "/files/IonGround/49CFR.3481.Cont.Ex.Small.excepted%20pkg.pdf" : "/files/IonGround/49CFR.3481.Cont.Ex.Small.more2pkg.pdf";      
+                    }
+                } else if(((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100))){
+                    if(this.cellsInPkg == "more" || this.fourBattRailOnly == "more"){
+                        this.reportLink = "/files/IonGround/49CFR.3481.Cont.Ex.Med.more4cell_2bat.pdf";
+                    }else if (this.cellsInPkg == "less" || this.fourBattRailOnly == "less"){
+                        this.reportLink = this.amountInConsignment == "true" ? "/files/IonGround/49CFR.3481.Cont.Ex.Med.2pkg.pdf" : "/files/IonGround/49CFR.3481.Cont.Ex.Med.more2pkg.pdf";
+                    }
+                }else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.packageWeight > 5){
+                    if (this.cellsInPkg == "button" || this.cellsInPkgRailOnly == "button"){
+                        this.reportLink = "/files/IonGround/49CFR.3481.Cont.Ex.BC.CAO.pdf";
+                    }else if (this.cellsInPkg == "more" || this.cellsInPkgRailOnly == "more") {
+                        this.reportLink = "/files/IonGround/49CFR.3481.Cont.Ex.Small.more4cell_2bat.CAO.pdf";
+                    }else if (this.cellsInPkg == "less" || this.cellsInPkgRailOnly == "less") {
+                        this.reportLink = this.amountInConsignment == "true" ? "/files/IonGround/49CFR.3481.Cont.Ex.Small.2pkg.CAO.pdf" : "/files/IonGround/49CFR.3481.Cont.Ex.Small.more2pkg.CAO.pdf";
+                    }
                 }
             }
         },
@@ -825,9 +857,9 @@ export default {
         groundLimiter() {
             //Cells
             if (this.battOrCell == "cell" && this.isIon && this.wattHour > 20) {
-                if (this.wattHour <= 60) {
+                if (this.wattHour <= 60 && this.howPacked == "contained") {
                     //Need something here for report <=60 wh
-                    return true;
+                    return false;
                 } else {
                     //Report >60 wh
                     return true;
@@ -842,9 +874,9 @@ export default {
                 }
                 //Batteries
             } else if (this.battOrCell == "battery" && this.isIon && this.wattHour > 100) {
-                if (this.wattHour <= 300) {
+                if (this.wattHour <= 300 && this.howPacked == "contained") {
                     //Report break
-                    return true;
+                    return false;
                 } else {
                     //Report break > 300 grams
                     return true;
