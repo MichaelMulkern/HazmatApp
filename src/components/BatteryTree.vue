@@ -528,6 +528,7 @@ export default {
                 this.showWh = false;
             }
         },
+        //==============REPORT SECTION========================================
         handleShowReport() {
             this.reportLink = "#";
             //AIR REPORTS
@@ -605,13 +606,13 @@ export default {
                     }else if (this.cellsInPkg == "less" || this.cellsInPkgRailOnly == "less"){
                         this.reportLink = this.amountInConsignment == "true" ? "/files/IonGround/49CFR.3481.Cont.Ex.Small.excepted%20pkg.pdf" : "/files/IonGround/49CFR.3481.Cont.Ex.Small.more2pkg.pdf";      
                     }
-                } else if(((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100))){
+                } else if(((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100)) && this.howPacked == "contained"){
                     if(this.cellsInPkg == "more" || this.fourBattRailOnly == "more"){
                         this.reportLink = "/files/IonGround/49CFR.3481.Cont.Ex.Med.more4cell_2bat.pdf";
                     }else if (this.cellsInPkg == "less" || this.fourBattRailOnly == "less"){
                         this.reportLink = this.amountInConsignment == "true" ? "/files/IonGround/49CFR.3481.Cont.Ex.Med.2pkg.pdf" : "/files/IonGround/49CFR.3481.Cont.Ex.Med.more2pkg.pdf";
                     }
-                }else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.packageWeight > 5){
+                }else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.packageWeight > 5 && this.howPacked == "contained"){
                     if (this.cellsInPkg == "button" || this.cellsInPkgRailOnly == "button"){
                         this.reportLink = "/files/IonGround/49CFR.3481.Cont.Ex.BC.CAO.pdf";
                     }else if (this.cellsInPkg == "more" || this.cellsInPkgRailOnly == "more") {
@@ -619,9 +620,17 @@ export default {
                     }else if (this.cellsInPkg == "less" || this.cellsInPkgRailOnly == "less") {
                         this.reportLink = this.amountInConsignment == "true" ? "/files/IonGround/49CFR.3481.Cont.Ex.Small.2pkg.CAO.pdf" : "/files/IonGround/49CFR.3481.Cont.Ex.Small.more2pkg.CAO.pdf";
                     }
+                // Packed with ION
+                }else if(((this.battOrCell == "cell" && this.wattHour > 60) || (this.battOrCell == "battery" && this.wattHour > 300)) && this.howPacked == "separate"){
+                    this.reportLink = "/files/IonGround/49CFR.3481.Pckd.Large.pdf";
+                }else if(((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100)) && this.howPacked == "separate"){
+                    this.reportLink = "/files/IonGround/49CFR.3481.Pckd.Ex.Med.pdf";
+                }else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.howPacked == "separate"){
+                    this.reportLink = this.packageWeight > 5 ? "/files/IonGround/49CFR.3481.Pckd.Ex.Small.CAO.pdf" : "/files/IonGround/49CFR.3481.Pckd.Ex.Small.pdf";        
                 }
             }
         },
+        //===============================================================================================
         handleMoreThanFourCells() {
             if (this.cellsInPkg == "more") {
                 if (this.transport == "Ocean" || this.transport == "Ground") {
@@ -765,15 +774,12 @@ export default {
                 }
             } else if (this.howPacked == "loose" && this.transport == "Ground") {
                 this.openReport = true;
-            } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) || this.packageWeight > 5) {
-                if (this.battOrCell == "battery") {
-                    this.gramsOption = "500 grams per battery";
-                } else if (this.battOrCell == "cell") {
-                    this.gramsOption = "12 grams per cell";
-                }
-                this.showGramsQuestion = true;
-                this.showPackageWeight = false;
-            } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) || this.packageWeight < 5) {
+            } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.packageWeight > 5) {
+                this.gramsOption = this.battOrCell == "battery" ? this.gramsOption = "500 grams per battery" : this.gramsOption = "12 grams per cell";
+                  this.showGramsQuestion = true;
+                    this.showPackageWeight = false;
+                
+            } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.packageWeight < 5) {
                 if(this.battOrCell == "cell"){
                     this.showMoreThanFour = true;
                     this.showPackageWeight = false;
