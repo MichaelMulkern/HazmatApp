@@ -506,7 +506,7 @@ export default {
         handleShowPkgWeight() {
             if (this.transport == "Ocean" && this.maritimeLimiter) {
                 this.openReport = true;
-            } else if (this.transport == "Ground" && this.groundLimiter) {
+            } else if (this.transport == "Ground" && this.groundLimiter && this.howPacked == "contained") {
                 this.openReport = true;
             } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "separate") {
                 this.openReport = true;
@@ -570,14 +570,23 @@ export default {
                     this.reportLink = this.packageWeight > 5 ? "/files/MetalAir/IATA.US.PI970.I.CAO.pdf" : "/files/MetalAir/IATA.US.PI970.I.PAX.pdf";
                 }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "contained" && this.packageWeight <= 5 && this.cellsInPkg != "button"){
                     if (this.twoBattAnswer == "true" || this.cellsInPkg == "more"){
-                        this.reportLink = "/files/MetalAir/IATA.US.PI970.II.pdf"
+                        this.reportLink = "/files/MetalAir/IATA.US.PI970.II.pdf";
                     }else{
-                        this.reportLink = "/files/MetalAir/IATA.US.PI970.II.%20excepted%20Pkg.pdf"
+                        this.reportLink = "/files/MetalAir/IATA.US.PI970.II.%20excepted%20Pkg.pdf";
                     }
                 }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "contained" && this.packageWeight > 5){
                     this.reportLink = "/files/MetalAir/IATA.US.PI970.Net%20Qty_I.CAO.pdf"
                 }else if(this.cellsInPkg == "button"){
-                    this.reportLink = "/files/MetalAir/IATA.US.PI970.II.BCell.pdf"
+                    this.reportLink = "/files/MetalAir/IATA.US.PI970.II.BCell.pdf";
+                }
+            }else if(this.transport == "Ground" && this.isIon){
+                //Stand Alone
+                if(((this.battOrCell == "cell" && this.wattHour > 60) || (this.battOrCell == "battery" && this.wattHour > 300)) && this.howPacked == "loose"){
+                    this.reportLink = "/files/IonGround/49CFR.3480.C9.Large.pdf";
+                }else if(((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100)) && this.howPacked == "loose"){
+                    this.reportLink = this.packageWeight > 30 ? "/files/IonGround/49CFR.3480.C9.Med.pdf" : "/files/IonGround/49CFR.3480.Ex.Med.pdf";
+                }else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.howPacked == "loose"){
+                    this.reportLink = this.packageWeight > 30 ? "/files/IonGround/49CFR.3480.C9.Small.pdf" : "/files/IonGround/49CFR.3480.Ex.Small.pdf";
                 }
             }
         },
@@ -722,6 +731,8 @@ export default {
                     this.showTwoBatt = true;
                     this.showPackageWeight = false;
                 }
+            } else if (this.howPacked == "loose" && this.transport == "Ground") {
+                this.openReport = true;
             } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) || this.packageWeight > 5) {
                 if (this.battOrCell == "battery") {
                     this.gramsOption = "500 grams per battery";
