@@ -639,6 +639,12 @@ export default {
                 }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "loose"){
                     this.reportLink = this.packageWeight > 30 ? "/files/MetalGround/49CFR.3090.C9.Small.pdf" : "/files/MetalGround/49CFR.3090.Ex.Small.pdf";  
                 }
+                //Contained in metal ground
+                if(((this.battOrCell == "cell" && this.weightOfLi > 5) || (this.battOrCell == "battery" && this.weightOfLi > 25)) && this.howPacked == "contained"){
+                    this.reportLink = "/files/MetalGround/49CFR.3091.Cont.Large.pdf";
+                }else if(((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.howPacked == "contained"){
+                    console.log("POOP")//No BUTTON CELL OPTIONS HERE
+                }
             }
         },
         //===============================================================================================
@@ -881,7 +887,7 @@ export default {
                     //Report >60 wh
                     return true;
                 }
-            } else if (this.battOrCell == "cell" && this.isMetal && this.weightOfLi > 1) {
+            } else if (this.battOrCell == "cell" && this.isMetal && this.weightOfLi > 1 && this.howPacked == "separate") {
                 if (this.weightOfLi <= 5) {
                     //Less than 6g report
                     return true;
