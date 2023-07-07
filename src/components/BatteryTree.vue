@@ -521,6 +521,8 @@ export default {
             } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "contained" && this.battOrCell == "battery") {
                 this.showTwoBatt = true;
                 this.showWeight = false;
+            }else if (this.transport == "Ground" && this.isMetal && this.howPacked == "loose" && ((this.battOrCell == "cell" && this.weightOfLi > 5) || (this.battOrCell == "battery" && this.weightOfLi > 25))){
+                this.openReport = true;
             }
             else {
                 this.showPackageWeight = true;
@@ -627,6 +629,15 @@ export default {
                     this.reportLink = "/files/IonGround/49CFR.3481.Pckd.Ex.Med.pdf";
                 }else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.howPacked == "separate"){
                     this.reportLink = this.packageWeight > 5 ? "/files/IonGround/49CFR.3481.Pckd.Ex.Small.CAO.pdf" : "/files/IonGround/49CFR.3481.Pckd.Ex.Small.pdf";        
+                }
+            }else if(this.transport == "Ground" && this.isMetal){
+                //Stand alone Metal
+                if(((this.battOrCell == "cell" && this.weightOfLi > 5) || (this.battOrCell == "battery" && this.weightOfLi > 25)) && this.howPacked == "loose"){
+                    this.reportLink = "/files/MetalGround/49CFR.3090.C9.Large.pdf";
+                }else if(((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.howPacked == "loose"){
+                    this.reportLink = this.packageWeight > 30 ? "/files/MetalGround/49CFR.3090.C9.Med.pdf" : "/files/MetalGround/49CFR.3090.Ex.Med.pdf";  
+                }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "loose"){
+                    this.reportLink = this.packageWeight > 30 ? "/files/MetalGround/49CFR.3090.C9.Small.pdf" : "/files/MetalGround/49CFR.3090.Ex.Small.pdf";  
                 }
             }
         },
