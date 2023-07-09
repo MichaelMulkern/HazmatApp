@@ -513,7 +513,7 @@ export default {
             } else if (this.transport == "Ground" && ((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100)) && this.howPacked == "contained") {
                 this.showFourBattRailOnly = true;
                 this.showWh = false;
-            } else if (this.transport == "Ground" && this.groundLimiter && this.howPacked == "separate") {
+            } else if (this.transport == "Ground" && this.groundLimiter && (this.howPacked == "separate" || this.howPacked == "contained")) {
                 this.openReport = true;
             } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "contained" && this.battOrCell == "cell") {
                 this.showFourBattRailOnly = true;
@@ -643,7 +643,11 @@ export default {
                 if(((this.battOrCell == "cell" && this.weightOfLi > 5) || (this.battOrCell == "battery" && this.weightOfLi > 25)) && this.howPacked == "contained"){
                     this.reportLink = "/files/MetalGround/49CFR.3091.Cont.Large.pdf";
                 }else if(((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.howPacked == "contained"){
-                    console.log("POOP")//No BUTTON CELL OPTIONS HERE
+                    if(this.cellsInPkg == "more" || this.fourBattRailOnly == "more"){
+                        this.reportLink = "/files/MetalGround/49CFR.3091.Cont.Ex.Med.more4cell_2bat.pdf";
+                    }else if (this.cellsInPkg == "less" || this.fourBattRailOnly == "less"){
+                        this.reportLink = this.amountInConsignment == "true" ? "/files/MetalGround/49CFR.3091.Cont.Ex.Med.2pkg.pdf" : "/files/MetalGround/49CFR.3091.Cont.Ex.Med.more2pkg.pdf"; //Error with this report on battery count
+                    }
                 }
             }
         },
@@ -904,7 +908,7 @@ export default {
                     //Report break > 300 grams
                     return true;
                 }
-            } else if (this.battOrCell == "battery" && this.isMetal && this.weightOfLi > 2) {
+            } else if (this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.howPacked == "separate") {
                 if (this.weightOfLi <= 25) {
                     //Report break
                     return true;
@@ -912,6 +916,8 @@ export default {
                     //Report break >25 grams of lithium content
                     return true;
                 }
+            } else if (this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi > 5) || (this.battOrCell == "battery" && this.weightOfLi > 25)) && this.howPacked == "contained"){
+                return true;
             }
             return false;
         },
