@@ -109,7 +109,7 @@
             <h3 class="question-header">How many {{ battOrCell }} does the package include? Note: A "set" of {{ battOrCell
             }} is the
                 number of individual {{ battOrCell }} that are required to power each piece of equipment.</h3>
-            <select class="dropdown" v-model="cellsInPkg">
+            <select class="dropdown" v-model="aSetAnswer">
                 <option class="drop-option" value="less">The minimum number of {{ battOrCell }} required for the equipment's
                     operations, plus no more than 2 spare sets.</option>
                 <option class="drop-option" value="more">The minimum number of {{ battOrCell }} required for the equipment's
@@ -121,9 +121,9 @@
             </div>
         </div>
 
-        <div id="two-batt-rail" class="selection-block" v-if="showTwoBattRailOnly">
+        <div id="two-batt-rail" class="selection-block" v-if="showTwoBattAndButton">
             <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
-            <select class="dropdown" v-model="cellsInPkgRailOnly">
+            <select class="dropdown" v-model="twoBattAndButton">
                 <option class="drop-option" value="more">Contains more than 2 batteries</option>
                 <option class="drop-option" value="less">Contains 2 batteries or less</option>
                 <option class="drop-option" value="button">Contains button cell batteries (includes circuit boards)</option>
@@ -134,9 +134,9 @@
             </div>
         </div>
 
-        <div id="two-batt" class="selection-block" v-if="showTwoBatt">
+        <div id="two-batt" class="selection-block" v-if="showTwoBattOnly">
             <h3>Does the package contain more than 2 batteries installed in the equipment?</h3>
-            <select class="dropdown" v-model="twoBattAnswer">
+            <select class="dropdown" v-model="twoBattOnly">
                 <option class="drop-option" value="true">Contains more than 2 batteries</option>
                 <option class="drop-option" value="false">Contains 2 batteries or less</option>
             </select>
@@ -186,10 +186,10 @@
         </div>
 
 
-        <div id="four-or-more" class="selection-block" v-if="showMoreThanFour">
+        <div id="four-or-more" class="selection-block" v-if="showFourBattAndButton">
             <h3 class="question-header">Does the package contain more than 4 cells or button cells installed in the
                 equipment?</h3>
-            <select class="dropdown" v-model="cellsInPkg">
+            <select class="dropdown" v-model="fourBattAndButton">
                 <option class="drop-option" value="more">Contains more than 4 cells</option>
                 <option class="drop-option" value="less">Contains 4 cells or less</option>
                 <option class="drop-option" value="button">Contains button cells (includes circuit boards)</option>
@@ -200,9 +200,9 @@
             </div>
         </div>
 
-        <div id="four-or-more-rail-only" class="selection-block" v-if="showFourBattRailOnly">
+        <div id="four-or-more-rail-only" class="selection-block" v-if="showFourBattOnly">
             <h3 class="question-header">Does the package contain more than 4 cells installed in the equipment?</h3>
-            <select class="dropdown" v-model="fourBattRailOnly">
+            <select class="dropdown" v-model="fourBattOnly">
                 <option class="drop-option" value="more">Contains more than 4 cells</option>
                 <option class="drop-option" value="less">Contains 4 cells or less</option>
             </select>
@@ -312,8 +312,8 @@ export default {
             usaOrIntl: "",
             showBattOrCell: false,
             battOrCell: "",
-            showTwoBatt: false,
-            twoBattAnswer: "",
+            showTwoBattOnly: false,
+            twoBattOnly: "",
             wattHour: 0,
             showWh: false,
             showReport: false,
@@ -321,7 +321,7 @@ export default {
             reportButton: "Show Report Preview",
             battsInPkg: "",
             showBattsInPkg: false,
-            showMoreThanFour: false,
+            showFourBattAndButton: false,
             fourOrMore: "",
             showMoreThanNeeded: false,
             moreThanNeeded: "",
@@ -339,10 +339,10 @@ export default {
             showTransport: true,
             socWarning: false,
             moreThanTwoWarning: false,
-            cellsInPkg: "",
+            fourBattAndButton: "",
             moreThanNeededWarning: false,
-            showTwoBattRailOnly: false,
-            cellsInPkgRailOnly: "",
+            showTwoBattAndButton: false,
+            twoBattAndButton: "",
             showASetQuestion: false,
             aSetAnswer: "",
             aSetWarning: false,
@@ -350,8 +350,8 @@ export default {
             showGramsQuestion: false,
             gramsAnswer: "",
             gramsWarning: false,
-            fourBattRailOnly: "",
-            showFourBattRailOnly: false,
+            fourBattOnly: "",
+            showFourBattOnly: false,
             thirtyFiveKiloWarning: false,
             openReport: false,
             reportLink: "",
@@ -399,26 +399,26 @@ export default {
                     } else if (this.isMetal) {
                         this.showWeight = true;
                         this.showPackageWeight = false;
-                        this.showFourBattRailOnly = false;
+                        this.showFourBattOnly = false;
                     }
                     break;
                 case 6:
                     if (this.transport == "Ground" && this.howPacked == "contained") {
-                        this.showMoreThanFour = false;
+                        this.showFourBattAndButton = false;
                         this.showBattsInPkg = false;
                         this.showStateOfCharge = false;
-                        this.showTwoBatt = false;
-                        this.showTwoBattRailOnly = false;
+                        this.showTwoBattOnly = false;
+                        this.showTwoBattAndButton = false;
                         this.showASetQuestion = false;
                         this.showGramsQuestion = false;
                         this.showPackageWeight = true;
                         //this.showWh = true; Wy was this here??
                     } else {
-                        this.showMoreThanFour = false;
+                        this.showFourBattAndButton = false;
                         this.showBattsInPkg = false;
                         this.showStateOfCharge = false;
-                        this.showTwoBatt = false;
-                        this.showTwoBattRailOnly = false;
+                        this.showTwoBattOnly = false;
+                        this.showTwoBattAndButton = false;
                         this.showASetQuestion = false;
                         this.showGramsQuestion = false;
                         this.showPackageWeight = true;
@@ -428,9 +428,9 @@ export default {
                     this.showMoreThanNeeded = false;
                     this.showGramsQuestion = false;
                     if (this.battOrCell == "battery" && this.isIon) {
-                        this.showTwoBatt = true;
+                        this.showTwoBattOnly = true;
                     } else if (this.battOrCell == "cell" && this.isIon) {
-                        this.showMoreThanFour = true;
+                        this.showFourBattAndButton = true;
                     } else if (this.transport == "Air" && this.isMetal) {
                         this.showGramsQuestion = true;
                     }
@@ -442,18 +442,18 @@ export default {
                 case 9:
                     if (this.isIon) {
                         if (this.battOrCell == "battery") {
-                            this.showTwoBatt = true;
+                            this.showTwoBattOnly = true;
                             this.showConsignment = false;
                         } else if (this.battOrCell == "cell") {
-                            this.showMoreThanFour = true;
+                            this.showFourBattAndButton = true;
                             this.showConsignment = false;
                         }
                     } else if (this.isMetal) {
                         if (this.battOrCell == "cell") {
-                            this.showFourBattRailOnly = true;
+                            this.showFourBattOnly = true;
                             this.showConsignment = false;
                         } else if (this.battOrCell == "battery") {
-                            this.showTwoBatt = true;
+                            this.showTwoBattOnly = true;
                             this.showConsignment = false;
                         }
                     }
@@ -508,18 +508,16 @@ export default {
         handleShowPkgWeight() {
             if (this.transport == "Ocean" && this.maritimeLimiter) {
                 this.openReport = true;
-            } else if (this.transport == "Ground" && this.groundLimiter && this.howPacked == "contained") {
-                this.openReport = true;
             } else if (this.transport == "Ground" && ((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100)) && this.howPacked == "contained") {
-                this.showFourBattRailOnly = true;
+                this.showFourBattOnly = true;
                 this.showWh = false;
             } else if (this.transport == "Ground" && this.groundLimiter && (this.howPacked == "separate" || this.howPacked == "contained")) {
                 this.openReport = true;
-            } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "contained" && this.battOrCell == "cell") {
-                this.showFourBattRailOnly = true;
+            } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "contained" && this.battOrCell == "cell"  && this.weightOfLi > 1) {
+                this.showFourBattOnly = true;
                 this.showWeight = false;
-            } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "contained" && this.battOrCell == "battery") {
-                this.showTwoBatt = true;
+            } else if (this.transport == "Ground" && this.isMetal && this.howPacked == "contained" && this.battOrCell == "battery" && this.weightOfLi > 2) {
+                this.showTwoBattOnly = true;
                 this.showWeight = false;
             }else if (this.transport == "Ground" && this.isMetal && this.howPacked == "loose" && ((this.battOrCell == "cell" && this.weightOfLi > 5) || (this.battOrCell == "battery" && this.weightOfLi > 25))){
                 this.openReport = true;
@@ -555,11 +553,11 @@ export default {
                 }else if(((this.wattHour <= 20 && this.battOrCell == "cell") || (this.wattHour <= 100 && this.battOrCell == "battery")) && this.howPacked == "contained"){
                     if(this.wattHour > 5){
                         this.reportLink = "/files/IonAir/IATA.US.PI967.Net%20Qty_I.CAO.pdf";
-                    }else if (this.twoBattAnswer == "true" || this.cellsInPkg == "more"){
+                    }else if (this.twoBattOnly == "true" || this.fourBattAndButton == "more"){
                         this.reportLink = "/files/IonAir/IATA.US.PI967.II.More%204cell_2bat.pdf";
-                    }else if (this.twoBattAnswer == "false" || this.cellsInPkg == "less"){
+                    }else if (this.twoBattOnly == "false" || this.fourBattAndButton == "less"){
                         this.reportLink = this.sectionTwoConsignment == "true" ? "/files/IonAir/IATA.US.PI967.II.More%202%20Pkg.pdf" : "/files/IonAir/IATA.US.PI967.II.2%20Pkg.pdf";
-                    }else if (this.cellsInPkg == "button"){
+                    }else if (this.fourBattAndButton == "button"){
                         this.reportLink = "/files/IonAir/IATA.US.PI967.II.BCell.pdf"; //Why international only?? 
                     }
                 }
@@ -577,15 +575,15 @@ export default {
                 //Contained inside
                 }else if(((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.howPacked == "contained" ){
                     this.reportLink = this.packageWeight > 5 ? "/files/MetalAir/IATA.US.PI970.I.CAO.pdf" : "/files/MetalAir/IATA.US.PI970.I.PAX.pdf";
-                }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "contained" && this.packageWeight <= 5 && this.cellsInPkg != "button"){
-                    if (this.twoBattAnswer == "true" || this.cellsInPkg == "more"){
+                }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "contained" && this.packageWeight <= 5 && this.fourBattAndButton != "button"){
+                    if (this.twoBattOnly == "true" || this.fourBattAndButton == "more"){
                         this.reportLink = "/files/MetalAir/IATA.US.PI970.II.pdf";
                     }else{
                         this.reportLink = "/files/MetalAir/IATA.US.PI970.II.%20excepted%20Pkg.pdf";
                     }
                 }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "contained" && this.packageWeight > 5){
                     this.reportLink = "/files/MetalAir/IATA.US.PI970.Net%20Qty_I.CAO.pdf"
-                }else if(this.cellsInPkg == "button"){
+                }else if(this.fourBattAndButton == "button"){
                     this.reportLink = "/files/MetalAir/IATA.US.PI970.II.BCell.pdf";
                 }
             //GROUND REPORTS
@@ -601,25 +599,25 @@ export default {
                 } else if(((this.battOrCell == "cell" && this.wattHour > 60) || (this.battOrCell == "battery" && this.wattHour > 300)) && this.howPacked == "contained"){
                     this.reportLink = "/files/IonGround/49CFR.3481.Cont.Large.pdf";
                 } else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.packageWeight <= 5 && this.howPacked == "contained"){
-                    if(this.cellsInPkgRailOnly == "button" || this.cellsInPkg == "button"){
+                    if(this.twoBattAndButton == "button" || this.fourBattAndButton == "button"){
                         this.reportLink = "/files/IonGround/49CFR.3481.Cont.Ex.BC.pdf";
-                    }else if (this.cellsInPkg == "more" || this.cellsInPkgRailOnly == "more"){
+                    }else if (this.fourBattAndButton == "more" || this.twoBattAndButton == "more"){
                         this.reportLink = "/files/IonGround/49CFR.3481.Cont.Ex.Small.more4cell_2bat.pdf";
-                    }else if (this.cellsInPkg == "less" || this.cellsInPkgRailOnly == "less"){
+                    }else if (this.fourBattAndButton == "less" || this.twoBattAndButton == "less"){
                         this.reportLink = this.amountInConsignment == "true" ? "/files/IonGround/49CFR.3481.Cont.Ex.Small.excepted%20pkg.pdf" : "/files/IonGround/49CFR.3481.Cont.Ex.Small.more2pkg.pdf";      
                     }
                 } else if(((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100)) && this.howPacked == "contained"){
-                    if(this.cellsInPkg == "more" || this.fourBattRailOnly == "more"){
+                    if(this.fourBattAndButton == "more" || this.fourBattOnly == "more"){
                         this.reportLink = "/files/IonGround/49CFR.3481.Cont.Ex.Med.more4cell_2bat.pdf";
-                    }else if (this.cellsInPkg == "less" || this.fourBattRailOnly == "less"){
+                    }else if (this.fourBattAndButton == "less" || this.fourBattOnly == "less"){
                         this.reportLink = this.amountInConsignment == "true" ? "/files/IonGround/49CFR.3481.Cont.Ex.Med.2pkg.pdf" : "/files/IonGround/49CFR.3481.Cont.Ex.Med.more2pkg.pdf";
                     }
                 }else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.packageWeight > 5 && this.howPacked == "contained"){
-                    if (this.cellsInPkg == "button" || this.cellsInPkgRailOnly == "button"){
+                    if (this.fourBattAndButton == "button" || this.twoBattAndButton == "button"){
                         this.reportLink = "/files/IonGround/49CFR.3481.Cont.Ex.BC.CAO.pdf";
-                    }else if (this.cellsInPkg == "more" || this.cellsInPkgRailOnly == "more") {
+                    }else if (this.fourBattAndButton == "more" || this.twoBattAndButton == "more") {
                         this.reportLink = "/files/IonGround/49CFR.3481.Cont.Ex.Small.more4cell_2bat.CAO.pdf";
-                    }else if (this.cellsInPkg == "less" || this.cellsInPkgRailOnly == "less") {
+                    }else if (this.fourBattAndButton == "less" || this.twoBattAndButton == "less") {
                         this.reportLink = this.amountInConsignment == "true" ? "/files/IonGround/49CFR.3481.Cont.Ex.Small.2pkg.CAO.pdf" : "/files/IonGround/49CFR.3481.Cont.Ex.Small.more2pkg.CAO.pdf";
                     }
                 // Packed with ION
@@ -643,41 +641,51 @@ export default {
                 if(((this.battOrCell == "cell" && this.weightOfLi > 5) || (this.battOrCell == "battery" && this.weightOfLi > 25)) && this.howPacked == "contained"){
                     this.reportLink = "/files/MetalGround/49CFR.3091.Cont.Large.pdf";
                 }else if(((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.howPacked == "contained"){
-                    if(this.cellsInPkg == "more" || this.fourBattRailOnly == "more"){
+                    if(this.twoBattOnly == "more" || this.fourBattOnly == "more"){
                         this.reportLink = "/files/MetalGround/49CFR.3091.Cont.Ex.Med.more4cell_2bat.pdf";
-                    }else if (this.cellsInPkg == "less" || this.fourBattRailOnly == "less"){
+                    }else if (this.twoBattOnly == "less" || this.fourBattOnly == "less"){
                         this.reportLink = this.amountInConsignment == "true" ? "/files/MetalGround/49CFR.3091.Cont.Ex.Med.2pkg.pdf" : "/files/MetalGround/49CFR.3091.Cont.Ex.Med.more2pkg.pdf"; //Error with this report on battery count
                     }
+                }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2))  && this.howPacked == "contained"){
+                    if(this.twoBattAndButton == "more" || this.fourBattAndButton == "more"){
+                        this.reportLink = this.packageWeight > 5 ? "/files/MetalGround/49CFR.3091.Cont.Ex.Small.more4cell_2bat.CAO.pdf" : "/files/MetalGround/49CFR.3091.Cont.Ex.Small.more4cell_2bat.pdf";
+                    }else if(this.twoBattAndButton == "button" || this.fourBattAndButton == "button"){
+                        this.reportLink = this.packageWeight > 5 ? "/files/MetalGround/49CFR.3091.Cont.Ex.BC.CAO.pdf" : "/files/MetalGround/49CFR.3091.Cont.Ex.BC.pdf";
+                    }
                 }
+                
+                
+
+                
             }
         },
         //===============================================================================================
         handleMoreThanFourCells() {
-            if (this.cellsInPkg == "more") {
+            if (this.fourBattAndButton == "more") {
                 if (this.transport == "Ocean" || this.transport == "Ground") {
                     this.openReport = true;
                 } else if (this.transport == "Air") {
                     this.showMoreThanNeeded = true;
-                    this.showMoreThanFour = false;
+                    this.showFourBattAndButton = false;
                 }
-            } else if (this.cellsInPkg == "less") {
+            } else if (this.fourBattAndButton == "less") {
                 if (this.transport == "Ocean" || this.transport == "Ground") {
                     this.showConsignment = true;
-                    this.showMoreThanFour = false;
+                    this.showFourBattAndButton = false;
                 } else if (this.transport == "Air") {
                     this.showMoreThanNeeded = true;
-                    this.showMoreThanFour = false;
+                    this.showFourBattAndButton = false;
                 }
-            } else if (this.cellsInPkg == "button") {
+            } else if (this.fourBattAndButton == "button") {
                 this.openReport = true;
             }
         },
         handleMoreThanFourRailOnly() {
-            if (this.fourBattRailOnly == "more") {
+            if (this.fourBattOnly == "more") {
                 this.openReport = true;
-            } else if (this.fourBattRailOnly == "less") {
+            } else if (this.fourBattOnly == "less") {
                 this.showConsignment = true;
-                this.showFourBattRailOnly = false;
+                this.showFourBattOnly = false;
             }
         },
         handleMoreThanNeededToPower() {
@@ -692,17 +700,17 @@ export default {
                 this.isOpen = true;
             } else if (this.moreThanNeeded == "false") {
                 if (this.isIon && this.battOrCell == "cell" && this.transport == "Air") {
-                    if (this.cellsInPkg == "more" && this.wattHour <= 20) {
+                    if (this.fourBattAndButton == "more" && this.wattHour <= 20) {
                         this.openReport = true;
-                    } else if (this.cellsInPkg == "less") {
+                    } else if (this.fourBattAndButton == "less") {
                         this.showSectionTwoConsignment = true;
                         this.showMoreThanNeeded = false;
                     } else { this.openReport = true; }
                 } else if (this.isMetal && this.transport == "Air") {
                     this.openReport = true;
-                } else if (this.isIon && this.twoBattAnswer == "true" && this.transport == "Air") {
+                } else if (this.isIon && this.twoBattOnly == "true" && this.transport == "Air") {
                     this.openReport = true;
-                } else if (this.isIon && this.twoBattAnswer == "false" && this.transport == "Air") {
+                } else if (this.isIon && this.twoBattOnly == "false" && this.transport == "Air") {
                     this.showSectionTwoConsignment = true;
                     this.showMoreThanNeeded = false;
                 }
@@ -714,20 +722,20 @@ export default {
             }
         },
         handleTwoBatt() {
-            if (this.twoBattAnswer == "true") {
+            if (this.twoBattOnly == "true") {
                 if (this.transport == "Ocean" || this.transport == "Ground") {
                     this.openReport = true;
                 } else if (this.transport == "Air") {
                     this.showMoreThanNeeded = true;
-                    this.showTwoBatt = false;
+                    this.showTwoBattOnly = false;
                 }
-            } else if (this.twoBattAnswer == "false") {
+            } else if (this.twoBattOnly == "false") {
                 if (this.transport == "Ocean" || this.transport == "Ground") {
                     this.showConsignment = true;
-                    this.showTwoBatt = false;
+                    this.showTwoBattOnly = false;
                 } else if (this.transport == "Air") {
                     this.showMoreThanNeeded = true;
-                    this.showTwoBatt = false;
+                    this.showTwoBattOnly = false;
                 }
             }
         },
@@ -766,6 +774,7 @@ export default {
             }
         },
         handlePackageJunction() {
+            
             this.socWarning = false;
             this.moreThanTwoWarning = false;
             this.moreThanNeededWarning = false;
@@ -783,14 +792,23 @@ export default {
                 this.showPackageWeight = false;
             } else if (this.howPacked == "contained" && this.battOrCell == "cell" && this.isIon && this.wattHour <= 20) {
                 //Transport doesn't matter
-                this.showMoreThanFour = true;
+                this.showFourBattAndButton = true;
                 this.showPackageWeight = false;
-            } else if (this.howPacked == "contained" && this.battOrCell == "battery" && this.isIon) {
-                if (this.transport == "Ground") {
-                    this.showTwoBattRailOnly = true;
+            } else if (this.howPacked == "contained" && ((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.transport == "Ground") { 
+                if(this.battOrCell == "battery"){
+                    this.showTwoBattAndButton = true;
                     this.showPackageWeight = false;
-                } else if (this.wattHour <= 100) {
-                    this.showTwoBatt = true;
+                }else if (this.battOrCell == "cell") {               
+                    this.showFourBattAndButton = true;
+                    this.showPackageWeight = false;
+                }
+            } else if (this.howPacked == "contained" && this.battOrCell == "battery" && this.wattHour <= 100 && this.isIon){
+                //Check to see if this app;lies to everything
+                this.showTwoBattOnly = true;
+                this.showPackageWeight = false;
+            } else if (this.howPacked == "contained" && this.battOrCell == "cell"){
+                if (this.transport == "Ground") {
+                    this.showFourBattOnly = true;
                     this.showPackageWeight = false;
                 }
             } else if (this.howPacked == "loose" && this.transport == "Ground") {
@@ -798,14 +816,13 @@ export default {
             } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.packageWeight > 5) {
                 this.gramsOption = this.battOrCell == "battery" ? this.gramsOption = "500 grams per battery" : this.gramsOption = "12 grams per cell";
                   this.showGramsQuestion = true;
-                    this.showPackageWeight = false;
-                
+                    this.showPackageWeight = false;     
             } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.packageWeight < 5) {
                 if(this.battOrCell == "cell"){
-                    this.showMoreThanFour = true;
+                    this.showFourBattAndButton = true;
                     this.showPackageWeight = false;
                 }else if(this.battOrCell == "battery"){
-                    this.showTwoBatt = true;
+                    this.showTwoBattOnly = true;
                     this.showPackageWeight = false;
                 }
             } else if (((this.wattHour > 20 && this.battOrCell == "cell") || (this.wattHour > 100 && this.battOrCell == "battery"))){
@@ -816,12 +833,12 @@ export default {
             }
         },
         handleTwoBattRailOnly() {
-            if (this.cellsInPkgRailOnly == "more") {
+            if (this.twoBattAndButton == "more") {
                 this.openReport = true;
-            } else if (this.cellsInPkgRailOnly == "less") {
+            } else if (this.twoBattAndButton == "less") {
                 this.showConsignment = true;
-                this.showTwoBattRailOnly = false;
-            } else if (this.cellsInPkgRailOnly == "button") {
+                this.showTwoBattAndButton = false;
+            } else if (this.twoBattAndButton == "button") {
                 this.openReport = true;
             }
         },
