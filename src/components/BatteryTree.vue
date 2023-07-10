@@ -673,11 +673,15 @@ export default {
                             this.reportLink = this.amountInConsignment == "true" ? "/files/MetalGround/49CFR.3091.Cont.Ex.Small.2pkg.pdf" : "/files/MetalGround/49CFR.3091.Cont.Ex.Small.more2pkg.pdf";
                         }
                     }
+                }     
+                //Packed with ground metal
+                if(((this.battOrCell == "cell" && this.weightOfLi > 5) || (this.battOrCell == "battery" && this.weightOfLi > 25)) && this.howPacked == "separate"){
+                    this.reportLink = "/files/MetalGround/49CFR.3091.Pckd.Large.pdf";
+                }else if(((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.howPacked == "separate"){
+                    this.reportLink = "/files/MetalGround/49CFR.3091.Pckd.Ex.Med.pdf";
+                }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "separate"){
+                    this.reportLink = this.packageWeight > 5 ? "/files/MetalGround/49CFR.3091.Pckd.Ex.Small.CAO.pdf" : "/files/MetalGround/49CFR.3091.Pckd.Ex.Small.pdf";
                 }
-                
-                
-
-                
             }
         },
         //===============================================================================================
