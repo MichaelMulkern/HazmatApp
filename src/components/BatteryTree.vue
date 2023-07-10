@@ -682,6 +682,29 @@ export default {
                 }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "separate"){
                     this.reportLink = this.packageWeight > 5 ? "/files/MetalGround/49CFR.3091.Pckd.Ex.Small.CAO.pdf" : "/files/MetalGround/49CFR.3091.Pckd.Ex.Small.pdf";
                 }
+            // Ocean Ion
+            }else if(this.transport == "Ocean" && this.isIon){
+                // Stand Alone
+                if(((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100)) && this.howPacked == "loose"){
+                    this.reportLink = "/files/IonOcean/IMO.US.3480.P903.pdf";
+                }else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.howPacked == "loose"){
+                    this.reportLink = this.packageWeight > 30 ? this.reportLink = "/files/IonOcean/IMO.US.3480.Pkg_wt_P903.pdf" : "/files/IonOcean/IMO.US.3480.SP188.pdf"; //Error in this report, never asks about number of cells in package
+                // Contained
+                }else if(((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100)) && this.howPacked == "contained"){
+                    this.reportLink = "/files/IonOcean/IMO.US.3481.Cont.P903.pdf";
+                }else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.howPacked == "contained"){
+                    if(this.fourBattAndButton == "more" || this.twoBattOnly == "true"){
+                        this.reportLink = this.packageWeight > 5 ? this.reportLink = "/files/IonOcean/IMO.US.3481.Cont.SP188.more4cell_2bat.CAO.pdf" : "/files/IonOcean/IMO.US.3481.Cont.SP188.more4cell_2bat.pdf"; 
+                    }else if ((this.fourBattAndButton == "less" || this.twoBattOnly == "false") && this.packageWeight > 5){
+                        this.reportLink = this.amountInConsignment == "true" ? this.reportLink = "/files/IonOcean/IMO.US.3481.Cont.SP188.2pkg.CAO.pdf" : "/files/IonOcean/IMO.US.3481.Cont.SP188.more2pkg.CAO.pdf";
+                    }else if ((this.fourBattAndButton == "less" || this.twoBattOnly == "false") && this.packageWeight <= 5){
+                        this.reportLink = this.amountInConsignment == "true" ? this.reportLink = "/files/IonOcean/IMO.US.3481.Cont.SP188.2pkg.pdf" : "/files/IonOcean/IMO.US.3481.Cont.SP188.more2pkg.pdf";
+                    }else if (this.fourBattAndButton == "button"){
+                        this.reportLink = this.packageWeight > 5 ? this.reportLink = "/files/IonOcean/IMO.US.3481.Cont.SP188.BC.CAO.pdf" : "/files/IonOcean/IMO.US.3481.Cont.SP188.BC.pdf";
+                    }
+                // Packed with start here
+                }
+
             }
         },
         //===============================================================================================
