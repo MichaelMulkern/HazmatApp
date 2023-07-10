@@ -442,19 +442,34 @@ export default {
                 case 9:
                     if (this.isIon) {
                         if (this.battOrCell == "battery") {
+                            if(this.transport == "Ground"){
+                            this.showTwoBattAndButton = true;
+                            this.showConsignment = false;
+                            }else{
                             this.showTwoBattOnly = true;
                             this.showConsignment = false;
+                            }
                         } else if (this.battOrCell == "cell") {
                             this.showFourBattAndButton = true;
                             this.showConsignment = false;
                         }
                     } else if (this.isMetal) {
                         if (this.battOrCell == "cell") {
+                            if(this.transport == "Ground"){
+                            this.showFourBattAndButton = true;
+                            this.showConsignment = false;
+                            }else{
                             this.showFourBattOnly = true;
                             this.showConsignment = false;
+                            }
                         } else if (this.battOrCell == "battery") {
+                            if(this.transport == "Ground"){
+                            this.showTwoBattAndButton = true;
+                            this.showConsignment = false;
+                            }else{
                             this.showTwoBattOnly = true;
                             this.showConsignment = false;
+                            }
                         }
                     }
                 break;
@@ -651,6 +666,12 @@ export default {
                         this.reportLink = this.packageWeight > 5 ? "/files/MetalGround/49CFR.3091.Cont.Ex.Small.more4cell_2bat.CAO.pdf" : "/files/MetalGround/49CFR.3091.Cont.Ex.Small.more4cell_2bat.pdf";
                     }else if(this.twoBattAndButton == "button" || this.fourBattAndButton == "button"){
                         this.reportLink = this.packageWeight > 5 ? "/files/MetalGround/49CFR.3091.Cont.Ex.BC.CAO.pdf" : "/files/MetalGround/49CFR.3091.Cont.Ex.BC.pdf";
+                    } else if(this.twoBattAndButton == "less" || this.fourBattAndButton == "less"){
+                        if(this.packageWeight > 5){
+                            this.reportLink = this.amountInConsignment == "true" ? "/files/MetalGround/49CFR.3091.Cont.Ex.Small.2pkg.CAO.pdf" : "/files/MetalGround/49CFR.3091.Cont.Ex.Small.more2pkg.CAO.pdf";
+                        }else if (this.packageWeight <= 5) {
+                            this.reportLink = this.amountInConsignment == "true" ? "/files/MetalGround/49CFR.3091.Cont.Ex.Small.2pkg.pdf" : "/files/MetalGround/49CFR.3091.Cont.Ex.Small.more2pkg.pdf";
+                        }
                     }
                 }
                 
