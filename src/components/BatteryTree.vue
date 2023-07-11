@@ -730,6 +730,11 @@ export default {
                     }else if(this.fourBattAndButton == "button"){
                         this.reportLink = this.packageWeight > 5 ? this.reportLink = "/files/MetalOcean/IMO.US.3091.Cont.SP188.BC.CAO.pdf" : "/files/MetalOcean/IMO.US.3091.Cont.SP188.BC.pdf";
                     }
+                //Metal Ocean Packed With
+                }else if(((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.howPacked == "separate"){
+                    this.reportLink = "/files/MetalOcean/IMO.US.3091.Pckd.P903.pdf";
+                }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "separate"){
+                    this.reportLink = this.packageWeight > 5 ? this.reportLink = "/files/MetalOcean/IMO.US.3091.Pckd.SP188.CAO.pdf" : "/files/MetalOcean/IMO.US.3091.Pckd.SP188.pdf";
                 }
             }
         },
