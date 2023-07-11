@@ -702,7 +702,11 @@ export default {
                     }else if (this.fourBattAndButton == "button"){
                         this.reportLink = this.packageWeight > 5 ? this.reportLink = "/files/IonOcean/IMO.US.3481.Cont.SP188.BC.CAO.pdf" : "/files/IonOcean/IMO.US.3481.Cont.SP188.BC.pdf";
                     }
-                // Packed with start here
+                // Packed with
+                }else if(((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100)) && this.howPacked == "separate"){
+                    this.reportLink = "/files/IonOcean/IMO.US.3481.Pckd.P903.pdf";
+                }else if(((this.battOrCell == "cell" && this.wattHour <= 20) || (this.battOrCell == "battery" && this.wattHour <= 100)) && this.howPacked == "separate") {
+                    this.reportLink = this.packageWeight > 5 ? this.reportLink = "/files/IonOcean/IMO.US.3481.Pckd.SP188.CAO.pdf" : "/files/IonOcean/IMO.US.3481.Pckd.SP188.pdf"; 
                 }
 
             }
