@@ -709,6 +709,28 @@ export default {
                     this.reportLink = this.packageWeight > 5 ? this.reportLink = "/files/IonOcean/IMO.US.3481.Pckd.SP188.CAO.pdf" : "/files/IonOcean/IMO.US.3481.Pckd.SP188.pdf"; 
                 }
 
+            }else if(this.transport == "Ocean" && this.isMetal){
+                //Metal Ocean Stand Alone
+                if(((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.howPacked == "loose"){
+                    this.reportLink = "/files/MetalOcean/IMO.US.3481.Pckd.P903.pdf";
+                }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "loose"){
+                    this.reportLink = this.packageWeight > 30 ? this.reportLink = "/files/MetalOcean/IMO.US.3090.Pkg_wt_P903.pdf" : "/files/MetalOcean/IMO.US.3090.SP188.pdf";
+                //Metal Ocean Contained
+                }else if(((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.howPacked == "contained"){
+                    this.reportLink = "/files/MetalOcean/IMO.US.3091.P903.pdf";
+                }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "contained"){
+                    if(this.fourBattAndButton == "more" || this.twoBattOnly == "true"){
+                        this.reportLink = this.packageWeight > 5 ? this.reportLink = "/files/MetalOcean/IMO.US.3091.Cont.SP188.more4cell_2bat.CAO.pdf" : "/files/MetalOcean/IMO.US.3091.SP188..pdf"; 
+                    }else if(this.fourBattAndButton == "less" || this.twoBattOnly == "false"){
+                        if(this.packageWeight > 5){
+                            this.reportLink = this.amountInConsignment == "true" ? this.reportLink = "/files/MetalOcean/IMO.US.3091.Cont.SP188.2pkg.CAO.pdf" : "/files/MetalOcean/IMO.US.3091.Cont.SP188.more2pkg.CAO.pdf";
+                        }else if(this.packageWeight <= 5){
+                            this.reportLink = this.amountInConsignment == "true" ? this.reportLink = "/files/MetalOcean/IMO.US.3091.SP188.excepted%20pkg.pdf" : "/files/MetalOcean/IMO.US.3091.Cont.SP188.more2pkg.pdf";
+                        }
+                    }else if(this.fourBattAndButton == "button"){
+                        this.reportLink = this.packageWeight > 5 ? this.reportLink = "/files/MetalOcean/IMO.US.3091.Cont.SP188.BC.CAO.pdf" : "/files/MetalOcean/IMO.US.3091.Cont.SP188.BC.pdf";
+                    }
+                }
             }
         },
         //===============================================================================================
@@ -855,21 +877,19 @@ export default {
                     this.showPackageWeight = false;
                 }
             } else if (this.howPacked == "contained" && this.battOrCell == "battery" && this.wattHour <= 100 && this.isIon){
-                //Check to see if this app;lies to everything
+                //Check to see if this applies to everything
                 this.showTwoBattOnly = true;
                 this.showPackageWeight = false;
-            } else if (this.howPacked == "contained" && this.battOrCell == "cell"){
-                if (this.transport == "Ground") {
-                    this.showFourBattOnly = true;
-                    this.showPackageWeight = false;
-                }
+            } else if (this.howPacked == "contained" && this.battOrCell == "cell" && this.transport == "Ground"){
+                this.showFourBattOnly = true;
+                this.showPackageWeight = false;
             } else if (this.howPacked == "loose" && this.transport == "Ground") {
                 this.openReport = true;
             } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.packageWeight > 5) {
                 this.gramsOption = this.battOrCell == "battery" ? this.gramsOption = "500 grams per battery" : this.gramsOption = "12 grams per cell";
                   this.showGramsQuestion = true;
                     this.showPackageWeight = false;     
-            } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.packageWeight < 5) {
+            } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.packageWeight <= 5) {
                 if(this.battOrCell == "cell"){
                     this.showFourBattAndButton = true;
                     this.showPackageWeight = false;
@@ -880,7 +900,15 @@ export default {
             } else if (((this.wattHour > 20 && this.battOrCell == "cell") || (this.wattHour > 100 && this.battOrCell == "battery"))){
                 this.showPackageWeight = false;
                 this.showMoreThanNeeded = true;
-            } else {
+            }else if (this.howPacked == "contained" && this.transport == "Ocean" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2))) {
+                if(this.battOrCell == "cell"){
+                    this.showFourBattAndButton = true;
+                    this.showPackageWeight = false;
+                }else if(this.battOrCell == "battery"){
+                    this.showTwoBattOnly = true;
+                    this.showPackageWeight = false;
+                }
+            }else {
                 this.openReport = true;
             }
         },
