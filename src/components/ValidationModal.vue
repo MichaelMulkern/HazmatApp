@@ -59,7 +59,7 @@
       background-clip: padding-box;
       border-radius: 0.3rem;
       padding: 1rem;
-      background-color: rgb(99, 49, 49);
+      background-color: rgb(87, 87, 87);
     }
     
     .fade-enter-active,

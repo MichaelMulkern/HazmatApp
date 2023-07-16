@@ -83,7 +83,7 @@
         </div>
 
         <div id="package-weight" class="selection-block" v-if="showPackageWeight">
-            <h3>What is the net quantity in kilograms (KG) of {{ battOrCell }} per package?</h3>
+            <h3>{{ weightQuestionDecider }}</h3>
             <label for="pkg-weight">Kilograms:</label>
             <input type="number" id="pkg-weight" name="pkg-weight" v-model="packageWeight">
             <div class="button-wrapper">
@@ -269,6 +269,12 @@
                 </h2>
             </warningModal>
         </div>
+    <!--Data Validation modal-->
+        <div>
+            <validationModal :open="openValidation" @close="openValidation = !openValidation" id="warning-box">
+                <h2 class="bold-white">Please make a valid selection.</h2>
+            </validationModal>
+        </div>
         <!--REPORT BELOW THIS LINE-->
 
         <div>
@@ -285,10 +291,11 @@
 <script>
 import warningModal from "@/components/WarningModal.vue";
 import reportModal from "@/components/ReportModal.vue";
+import validationModal from "@/components/ValidationModal.vue";
 import { ref } from "vue";
 export default {
     name: "BatteryTree",
-    components: { warningModal, reportModal },
+    components: { warningModal, reportModal, validationModal },
     setup() {
         const isOpen = ref(false)
         return { isOpen }
@@ -355,13 +362,19 @@ export default {
             thirtyFiveKiloWarning: false,
             openReport: false,
             reportLink: "",
+            openValidation: false,
 
         }
     },
     methods: {
         handleModeOfTransport() {
+            if(this.transport == ""){
+                this.openValidation = true;
+                return;
+            }
             this.showMetalOrIon = true;
             this.showTransport = false;
+            
         },
         handleBack(menuNumber) {
             switch (menuNumber) {
@@ -477,6 +490,10 @@ export default {
 
         },
         handlePacked() {
+            if(this.howPacked == ""){
+                this.openValidation = true;
+                return;
+            }
             if (this.transport == "Ground") {
                 this.showBattOrCell = true;
                 this.showHowPacked = false;
@@ -486,6 +503,10 @@ export default {
             }
         },
         handleType() {
+            if(this.lithiumIon == ""){
+                this.openValidation = true;
+                return;
+            }
             switch (this.lithiumIon) {
                 case "true":
                     this.isIon = true
@@ -503,10 +524,18 @@ export default {
 
         },
         handleUsaOrIntl() {
+            if(this.usaOrIntl == ""){
+                this.openValidation = true;
+                return;
+            }
             this.showBattOrCell = true;
             this.showUsa = false
         },
         handleCellsOrBatteries() {
+            if(this.battOrCell == ""){
+                this.openValidation = true;
+                return;
+            }
             if (this.isIon) {
                 this.showWh = true;
                 this.showWeight = false;
@@ -521,6 +550,10 @@ export default {
         },
         //Also has some rail only stuff that skips the package weight
         handleShowPkgWeight() {
+            if((this.weightOfLi <= 0 && this.isMetal) || (this.wattHour <= 0 && this.isIon)){
+                this.openValidation = true;
+                return;
+            }
             if (this.transport == "Ocean" && this.maritimeLimiter) {
                 this.openReport = true;
             } else if (this.transport == "Ground" && ((this.battOrCell == "cell" && this.wattHour > 20) || (this.battOrCell == "battery" && this.wattHour > 100)) && this.howPacked == "contained") {
@@ -740,6 +773,10 @@ export default {
         },
         //===============================================================================================
         handleMoreThanFourCells() {
+            if(this.fourBattAndButton == ""){
+                this.openValidation = true;
+                return;
+            }
             if (this.fourBattAndButton == "more") {
                 if (this.transport == "Ocean" || this.transport == "Ground") {
                     this.openReport = true;
@@ -760,6 +797,10 @@ export default {
             }
         },
         handleMoreThanFourRailOnly() {
+            if(this.fourBattOnly == ""){
+                this.openValidation = true;
+                return;
+            }
             if (this.fourBattOnly == "more") {
                 this.openReport = true;
             } else if (this.fourBattOnly == "less") {
@@ -774,6 +815,10 @@ export default {
             this.aSetWarning = false;
             this.gramsWarning = false;
             this.thirtyFiveKiloWarning = false;
+            if(this.moreThanNeeded == ""){
+                this.openValidation = true;
+                return;
+            }
             if (this.moreThanNeeded == "true") {
                 this.moreThanNeededWarning = true;
                 this.isOpen = true;
@@ -796,11 +841,19 @@ export default {
             }
         },
         handleNumberContainedInConsignment() {
+            if(this.amountInConsignment == ""){
+                this.openValidation = true;
+                return;
+            }
             if (this.amountInConsignment == "true" || this.amountInConsignment == "false") {
                 this.openReport = true;
             }
         },
         handleTwoBatt() {
+            if(this.twoBattOnly == ""){
+                this.openValidation = true;
+                return;
+            }
             if (this.twoBattOnly == "true") {
                 if (this.transport == "Ocean" || this.transport == "Ground") {
                     this.openReport = true;
@@ -825,6 +878,10 @@ export default {
             this.aSetWarning = false;
             this.gramsWarning = false;
             this.thirtyFiveKiloWarning = false;
+            if(this.battsInPkg == ""){
+                this.openValidation = true;
+                return;
+            }
             if (this.battsInPkg == "false") {
                 this.moreThanTwoWarning = true;
                 this.isOpen = true;
@@ -839,6 +896,10 @@ export default {
             this.aSetWarning = false;
             this.gramsWarning = false;
             this.thirtyFiveKiloWarning = false;
+            if(this.stateOfCharge < 0){
+                this.openValidation = true;
+                return;
+            }
             //Air only max 30% charge 
             if (this.stateOfCharge > 30) {
                 this.isOpen = true;
@@ -848,18 +909,25 @@ export default {
             }
         },
         handleSectionTwoPackages() {
+            if(this.sectionTwoConsignment == ""){
+                this.openValidation = true;
+                return;
+            }
             if (this.sectionTwoConsignment == "true" || this.sectionTwoConsignment == "false") {
                 this.openReport = true;
             }
         },
         handlePackageJunction() {
-            
             this.socWarning = false;
             this.moreThanTwoWarning = false;
             this.moreThanNeededWarning = false;
             this.aSetWarning = false;
             this.gramsWarning = false;
             this.thirtyFiveKiloWarning = false;
+            if(this.packageWeight <= 0){
+                this.openValidation = true;
+                return;
+            }
             if (this.transport == "Air" && this.packageWeight > 35) {
                 this.thirtyFiveKiloWarning = true;
                 this.isOpen = true;
@@ -918,6 +986,10 @@ export default {
             }
         },
         handleTwoBattRailOnly() {
+            if(this.twoBattAndButton == ""){
+                this.openValidation = true;
+                return;
+            }
             if (this.twoBattAndButton == "more") {
                 this.openReport = true;
             } else if (this.twoBattAndButton == "less") {
@@ -934,6 +1006,10 @@ export default {
             this.aSetWarning = false;
             this.gramsWarning = false;
             this.thirtyFiveKiloWarning = false;
+            if(this.aSetAnswer == ""){
+                this.openValidation = true;
+                return;
+            }
             if (this.aSetAnswer == "less") {
                 this.openReport = true;
             } else if (this.aSetAnswer == "more") {
@@ -948,6 +1024,10 @@ export default {
             this.aSetWarning = false;
             this.gramsWarning = false;
             this.thirtyFiveKiloWarning = false;
+            if(this.gramsAnswer == ""){
+                this.openValidation = true;
+                return;
+            }
             if (this.gramsAnswer == "true") {
                 this.isOpen = true;
                 this.gramsWarning = true;
@@ -1035,6 +1115,19 @@ export default {
                 return "Undefined";
             }
 
+        },
+
+        weightQuestionDecider() {
+            let batteryCellPluralizer = "";
+            if (this.battOrCell == "battery"){
+                batteryCellPluralizer = "batteries";
+            }else if (this.battOrCell == "cell"){
+                batteryCellPluralizer = "cells";
+            }
+            if (this.transport != "Air" && this.howPacked == "loose"){
+                return "What is the gross weight, in kilograms (kg), per package?"
+            }
+            return "What is the net quantity in kilograms (KG) of " + batteryCellPluralizer + " per package?";
         },
     }
 }
