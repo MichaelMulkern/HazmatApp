@@ -62,7 +62,7 @@ export default {
   justify-content: center;
   flex-direction: column;
   position: relative;
-  background-color: #fff;
+  background-color: rgb(87, 87, 87);
   border: 1px solid black;
   background-clip: padding-box;
   border-radius: 0.3rem;

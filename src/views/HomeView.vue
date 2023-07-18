@@ -1,4 +1,5 @@
 <template>
+  <body>
   <div class="home">
     <h1>TOP LOGO HERE</h1>
     <h2>The following app is intended to provide guidance on the classification for
@@ -13,6 +14,7 @@
 
    
   </div>
+</body>
 </template>
 
 <script>
@@ -59,3 +61,18 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+body{
+background-image: url("../assets/containerYard.jpeg");
+background-size: cover;
+width: 100vw;
+height: 100vh;
+}
+
+.home{
+  background-color: rgba(56, 56, 56, 0.671);
+  color: aliceblue;
+}
+
+</style>

@@ -3,7 +3,7 @@
         <h2 v-if="showStart">Transporting Lithium Batteries by {{ transport }}</h2>
 
         <div id="transport-mode" class="selection-block" v-if="showTransport">
-            <span>Select mode of transport: </span>
+            <h3>Select mode of transport: </h3>
             <select name="transport-list" class="dropdown" v-model="transport">
                 <option class="drop-option" value="Air">Air</option>
                 <option class="drop-option" value="Ocean">Maritime</option>
@@ -65,7 +65,7 @@
         <div id="watt-hours" class="selection-block" v-if="showWh && isIon">
             <h3 class="question-header">What is the watt-hour (WH) rating per {{ battOrCell }}?</h3>
             <label for="watt-hour">WH:</label>
-            <input type="number" id="watt-hour" name="watt-hour" v-model="wattHour">
+            <input type="number" class="input-num" id="watt-hour" name="watt-hour" v-model="wattHour">
             <div class="button-wrapper">
                 <button class="nav-buttons" v-on:click="handleBack(4)">BACK</button><button class="nav-buttons"
                     v-on:click="handleShowPkgWeight()">NEXT</button>
@@ -75,7 +75,7 @@
         <div id="li-content" class="selection-block" v-if="showWeight && isMetal">
             <h3 class="question-header">What is the weight of lithium content in grams (g) per {{ battOrCell }}?</h3>
             <label for="weight">Grams:</label>
-            <input type="number" id="weight" name="weight" v-model="weightOfLi">
+            <input type="number" class="input-num" id="weight" name="weight" v-model="weightOfLi">
             <div class="button-wrapper">
                 <button class="nav-buttons" v-on:click="handleBack(4)">BACK</button><button class="nav-buttons"
                     v-on:click="handleShowPkgWeight()">NEXT</button>
@@ -85,7 +85,7 @@
         <div id="package-weight" class="selection-block" v-if="showPackageWeight">
             <h3>{{ weightQuestionDecider }}</h3>
             <label for="pkg-weight">Kilograms:</label>
-            <input type="number" id="pkg-weight" name="pkg-weight" v-model="packageWeight">
+            <input type="number" class="input-num" id="pkg-weight" name="pkg-weight" v-model="packageWeight">
             <div class="button-wrapper">
                 <button class="nav-buttons" v-on:click="handleBack(5)">BACK</button><button class="nav-buttons"
                     v-on:click="handlePackageJunction()">NEXT</button>
@@ -391,7 +391,8 @@ export default {
                     this.showUsa = false
                     break;
                 case 3:
-                    if (this.transport == "Ground") {
+                    //USA and INTL disabled option, make this only ground if you want to bring it back
+                    if (this.transport == "Ground" || this.transport == "Air" || this.transport == "Ocean") {
                         this.showBattOrCell = false
                         this.showHowPacked = true;
                     } else {
@@ -494,7 +495,8 @@ export default {
                 this.openValidation = true;
                 return;
             }
-            if (this.transport == "Ground") {
+            //This option is hidden, make it hidden from only ground if you want to bring it back
+            if (this.transport == "Ground" || this.transport == "Air" || this.transport == "Ocean") {
                 this.showBattOrCell = true;
                 this.showHowPacked = false;
             } else {
@@ -1163,11 +1165,13 @@ export default {
 
 .button-wrapper {
     margin-top: 15px;
+    
 }
 
 .nav-buttons {
     margin-left: 70px;
     margin-right: 70px;
+    
 }
 
 
@@ -1176,7 +1180,7 @@ export default {
     border-radius: .5rem;
     box-sizing: border-box;
     color: #FFFFFF;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: bold;
     padding: 0.5rem 0.75rem;
     text-decoration: none;
@@ -1209,7 +1213,7 @@ export default {
     cursor: pointer;
     display: inline-block;
     font-family: nunito, roboto, proxima-nova, "proxima nova", sans-serif;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 800;
     line-height: 16px;
     min-height: 40px;
@@ -1222,6 +1226,7 @@ export default {
     -webkit-user-select: none;
     touch-action: manipulation;
     vertical-align: middle;
+    text-decoration: none;
 }
 
 .report-button:hover,
@@ -1233,5 +1238,13 @@ export default {
 
 .report-button:active {
     opacity: .5;
+}
+
+.selection-block {
+    font-size: 20px;
+}
+
+.dropdown, .input-num{
+    font-size: 20px;
 }
 </style>
