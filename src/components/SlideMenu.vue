@@ -1,15 +1,7 @@
 <template>
-    <div>
+    <div id="main-menu">
         <Slide>
-            <h3>Stuff</h3>
-            <li>Links</li>
-            <li>Info</li>
-            <li>Links</li>
-            <li>Info</li>
-            <li>Links</li>
-            <li>Info</li>
-            <li>Links</li>
-            <li>Info</li>
+            <button @click="reloadPage">Start Over</button>
             <li><router-link v-bind:to="{ name: 'about' }"> About </router-link></li>
         </Slide>
     </div>
@@ -20,8 +12,17 @@ import { Slide } from 'vue3-burger-menu'
 export default {
     components: {
         Slide
+    },
+    methods: {
+    reloadPage() {
+      window.location.reload();
     }
+  }
 }
 </script>
 
-<style></style>
+<style>
+#main-menu {
+    background-color: aliceblue;
+}
+</style>

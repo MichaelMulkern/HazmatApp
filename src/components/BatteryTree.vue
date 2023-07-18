@@ -10,7 +10,7 @@
                 <option class="drop-option" value="Ground">49 CFR Road/Rail</option>
             </select>
             <div class="button-wrapper">
-                <button class="nav-buttons" v-on:click="handleModeOfTransport()">BEGIN</button>
+                <button class="nav-buttons" v-on:click="handleModeOfTransport()">NEXT</button>
             </div>
         </div>
 
@@ -1242,6 +1242,8 @@ export default {
 
 .selection-block {
     font-size: 20px;
+    padding-bottom: 20px;   
+
 }
 
 .dropdown, .input-num{
