@@ -960,7 +960,7 @@ export default {
                 this.showPackageWeight = false;
             } else if (this.howPacked == "loose" && this.transport == "Ground") {
                 this.openReport = true;
-            } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.packageWeight > 5) {
+            } else if (this.howPacked == "contained" && this.transport == "Air" && this.isMetal && ((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) || this.packageWeight > 5) {
                 this.gramsOption = this.battOrCell == "battery" ? this.gramsOption = "500 grams per battery" : this.gramsOption = "12 grams per cell";
                   this.showGramsQuestion = true;
                     this.showPackageWeight = false;     
