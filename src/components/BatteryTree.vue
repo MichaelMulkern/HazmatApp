@@ -29,8 +29,8 @@
         <div id="packed-type" class="selection-block" v-if="showHowPacked">
             <h3>How are the batteries packed?</h3>
             <select class="dropdown" v-model="howPacked">
-                <option class="drop-option" value="contained">Contained Within Equipment</option>
-                <option class="drop-option" value="separate">Packed Alongside Equipment</option>
+                <option class="drop-option" value="contained">Contained In Equipment</option>
+                <option class="drop-option" value="separate">Packed With Equipment</option>
                 <option class="drop-option" value="loose">Stand Alone</option>
             </select>
             <div class="button-wrapper">
