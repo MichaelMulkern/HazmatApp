@@ -65,7 +65,7 @@
         <div id="watt-hours" class="selection-block" v-if="showWh && isIon">
             <h3 class="question-header">What is the watt-hour (WH) rating per {{ battOrCell }}?</h3>
             <label for="watt-hour">WH:</label>
-            <input type="number" class="input-num" id="watt-hour" name="watt-hour" v-model="wattHour">
+            <input type="number" autofocus class="input-num" id="watt-hour" name="watt-hour" v-model="wattHour">
             <div class="button-wrapper">
                 <button class="nav-buttons" v-on:click="handleBack(4)">BACK</button><button class="nav-buttons"
                     v-on:click="handleShowPkgWeight()">NEXT</button>
@@ -75,7 +75,7 @@
         <div id="li-content" class="selection-block" v-if="showWeight && isMetal">
             <h3 class="question-header">What is the weight of lithium content in grams (g) per {{ battOrCell }}?</h3>
             <label for="weight">Grams:</label>
-            <input type="number" class="input-num" id="weight" name="weight" v-model="weightOfLi">
+            <input type="number" autofocus class="input-num" id="weight" name="weight" v-model="weightOfLi">
             <div class="button-wrapper">
                 <button class="nav-buttons" v-on:click="handleBack(4)">BACK</button><button class="nav-buttons"
                     v-on:click="handleShowPkgWeight()">NEXT</button>
@@ -85,7 +85,7 @@
         <div id="package-weight" class="selection-block" v-if="showPackageWeight">
             <h3>{{ weightQuestionDecider }}</h3>
             <label for="pkg-weight">Kilograms:</label>
-            <input type="number" class="input-num" id="pkg-weight" name="pkg-weight" v-model="packageWeight">
+            <input type="number" autofocus class="input-num" id="pkg-weight" name="pkg-weight" v-model="packageWeight">
             <div class="button-wrapper">
                 <button class="nav-buttons" v-on:click="handleBack(5)">BACK</button><button class="nav-buttons"
                     v-on:click="handlePackageJunction()">NEXT</button>
@@ -747,7 +747,7 @@ export default {
             }else if(this.transport == "Ocean" && this.isMetal){
                 //Metal Ocean Stand Alone
                 if(((this.battOrCell == "cell" && this.weightOfLi > 1) || (this.battOrCell == "battery" && this.weightOfLi > 2)) && this.howPacked == "loose"){
-                    this.reportLink = "/files/MetalOcean/IMO.US.3481.Pckd.P903.pdf";
+                    this.reportLink = "/files/MetalOcean/IMO.US.3090.P903.pdf";
                 }else if(((this.battOrCell == "cell" && this.weightOfLi <= 1) || (this.battOrCell == "battery" && this.weightOfLi <= 2)) && this.howPacked == "loose"){
                     this.reportLink = this.packageWeight > 30 ? this.reportLink = "/files/MetalOcean/IMO.US.3090.Pkg_wt_P903.pdf" : "/files/MetalOcean/IMO.US.3090.SP188.pdf";
                 //Metal Ocean Contained
